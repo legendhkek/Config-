@@ -127,6 +127,16 @@
         }
       },
       {
+        "Type": "KeyCheck",
+        "Key": "<success>",
+        "Condition": "Contains",
+        "Value": "false",
+        "OnMatch": {
+          "Action": "FAIL",
+          "Message": "Invalid Account"
+        }
+      },
+      {
         "Type": "Parse",
         "Method": "LR",
         "LeftString": "\"message\":\"",
@@ -142,7 +152,7 @@
         "Condition": "Contains",
         "Value": "Invalid credentials",
         "OnMatch": {
-          "Action": "RETRY",
+          "Action": "FAIL",
           "Message": "Invalid Credentials"
         }
       },
@@ -243,6 +253,6 @@
     "Threading": "Enabled",
     "MultiRequest": "Enabled",
     "ProxyMode": "Required",
-    "InputFormat": "USERNAME:PASSWORD"
+    "InputFormat": "Email:Password"
   }
 }
