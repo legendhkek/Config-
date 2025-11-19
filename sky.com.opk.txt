@@ -6,7 +6,7 @@
     "CreationDate": "2025-11-19T08:17:00Z",
     "LastModified": "2025-11-19T08:17:00Z",
     "Version": "1.0.0",
-    "Description": "Sky.com account checker configuration with CPM 50, Bot 50, threading enabled, and multi-request support for OpenBullet"
+    "Description": "Advanced Sky.com account checker configuration with CPM 200, Bot 200, enhanced threading, and advanced multi-request support for OpenBullet"
   },
   "Settings": {
     "General": {
@@ -18,11 +18,11 @@
       "NeedsProxies": true,
       "OnlySocks": false,
       "OnlySsl": false,
-      "MaxCPM": 50,
-      "SuggestedBots": 50,
+      "MaxCPM": 200,
+      "SuggestedBots": 200,
       "ThreadingEnabled": true,
       "MultiRequestSupport": true,
-      "ConcurrentRequests": 50,
+      "ConcurrentRequests": 200,
       "RequestTimeout": 10000,
       "RetryOnError": true,
       "MaxRetries": 3
@@ -45,20 +45,20 @@
     },
     "Threading": {
       "Enabled": true,
-      "MaxThreads": 50,
-      "ThreadPoolSize": 50,
+      "MaxThreads": 200,
+      "ThreadPoolSize": 200,
       "QueueSize": 1000,
       "UseThreadPool": true
     },
     "RateLimiting": {
       "Enabled": true,
-      "MaxCPM": 50,
+      "MaxCPM": 200,
       "EnforceRateLimit": true,
       "BurstAllowed": false
     },
     "MultiRequest": {
       "Enabled": true,
-      "MaxConcurrentRequests": 50,
+      "MaxConcurrentRequests": 200,
       "RequestQueueing": true,
       "KeepAlive": true,
       "ReuseConnections": true
@@ -241,8 +241,8 @@
     ]
   },
   "ConfigSpecs": {
-    "CPM": 50,
-    "Bots": 50,
+    "CPM": 200,
+    "Bots": 200,
     "Threading": "Enabled",
     "MultiRequest": "Enabled",
     "ProxyMode": "Required",
