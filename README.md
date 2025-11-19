@@ -1,15 +1,57 @@
-# Sky.com Advanced Account Checker Pro - Configuration Guide
+# Sky.com Advanced Account Checker Pro - TLS Edition - Configuration Guide
 
 ## Overview
 
-This is an **enterprise-grade** Sky.com account checker configuration designed for OpenBullet with advanced features including intelligent retry mechanisms, comprehensive data extraction, anti-bot evasion, session management, 2FA detection, proxy health monitoring, and performance optimizations.
+This is an **enterprise-grade** Sky.com account checker configuration designed for OpenBullet with **advanced TLS 1.3 fingerprinting** and comprehensive SSL/TLS security features. Includes intelligent retry mechanisms, comprehensive data extraction, anti-bot evasion, session management, 2FA detection, proxy health monitoring, and performance optimizations. **Full OPK format support with TLS.**
 
-**Version:** 2.0.0  
+**Version:** 2.1.0  
 **Author:** legendhkek  
 **Category:** Streaming  
 **Last Updated:** 2025-11-19
 
+### 🔐 TLS Edition Highlights
+
+- **TLS 1.3** with automatic fallback to TLS 1.2/1.1
+- **Modern Cipher Suites** (7 secure algorithms)
+- **GREASE Support** for anti-fingerprinting
+- **Perfect Forward Secrecy** (ECDHE with 384-bit curves)
+- **Session Resumption** for faster connections
+- **OCSP Stapling** for certificate validation
+- **ALPN Negotiation** (HTTP/2 preferred)
+- **15 TLS Extensions** mimicking Chrome 120
+- **OPK Format** with full TLS integration
+
 ## Key Features
+
+### 🔐 Advanced TLS/SSL Security (NEW in v2.1)
+- **TLS Version:** TLS 1.3 (primary) with fallback to TLS 1.2 and TLS 1.1
+- **Fingerprint Profile:** Chrome 120 Modern browser emulation
+- **Cipher Suites:** 7 modern, secure cipher algorithms including:
+  - TLS_AES_128_GCM_SHA256
+  - TLS_AES_256_GCM_SHA384
+  - TLS_CHACHA20_POLY1305_SHA256
+  - ECDHE_ECDSA with AES-GCM
+  - ECDHE_RSA with AES-GCM
+- **Signature Algorithms:** 8 algorithms (ECDSA, RSA-PSS, RSA-PKCS1)
+- **Supported Groups:** x25519, secp256r1, secp384r1
+- **ALPN Protocols:** HTTP/2 (h2) with HTTP/1.1 fallback
+- **Perfect Forward Secrecy:** Enabled with ECDHE curve secp384r1
+- **Session Tickets:** Enabled for session resumption
+- **OCSP Stapling:** Enabled for certificate validation
+- **SNI (Server Name Indication):** Enabled
+- **TLS Extensions:** 15 extensions including:
+  - server_name, extended_master_secret
+  - supported_groups, key_share
+  - signature_algorithms, status_request (OCSP)
+  - application_layer_protocol_negotiation
+  - psk_key_exchange_modes, compress_certificate
+  - application_settings (HTTP/2 settings)
+- **GREASE:** Enabled (cipher suite, extension, version randomization)
+- **Extension Order Randomization:** Enabled for anti-fingerprinting
+- **TLS 1.3 0-RTT:** Disabled for security
+- **Certificate Verification:** Strict (no self-signed)
+- **DHE Key Size:** 2048-bit minimum
+- **Record Size Limit:** 16384 bytes
 
 ### 🚀 Performance Optimizations
 - **CPM:** 500 (Checks Per Minute)
@@ -261,6 +303,20 @@ When loading this configuration in OpenBullet:
 
 ## Advanced Features Summary
 
+### TLS/SSL Security (NEW)
+✅ TLS 1.3 Fingerprinting  
+✅ Modern Cipher Suites (7 algorithms)  
+✅ GREASE Support  
+✅ ALPN Negotiation (HTTP/2)  
+✅ Perfect Forward Secrecy  
+✅ Session Resumption  
+✅ OCSP Stapling  
+✅ SNI Support  
+✅ 15 TLS Extensions  
+✅ Extension Order Randomization  
+✅ Chrome 120 Browser Emulation  
+
+### Core Features
 ✅ Exponential Backoff  
 ✅ Circuit Breaker  
 ✅ Connection Pooling  
@@ -299,6 +355,27 @@ For issues, suggestions, or contributions:
 - **Version:** 2.0.0
 
 ## Changelog
+
+### Version 2.1.0 (2025-11-19) - TLS Edition
+- **NEW: Advanced TLS 1.3 Configuration**
+  - TLS 1.3 with automatic fallback to 1.2/1.1
+  - Chrome 120 Modern fingerprint profile
+  - 7 modern cipher suites (AES-GCM, ChaCha20-Poly1305)
+  - 8 signature algorithms (ECDSA, RSA-PSS, RSA-PKCS1)
+  - 3 supported groups (x25519, secp256r1, secp384r1)
+  - ALPN protocol negotiation (HTTP/2 preferred)
+  - Perfect Forward Secrecy with ECDHE secp384r1
+  - Session resumption and session tickets
+  - OCSP stapling for certificate validation
+  - SNI (Server Name Indication) support
+  - 15 TLS extensions for realistic fingerprint
+  - GREASE enabled (cipher, extension, version randomization)
+  - Extension order randomization
+  - Strict certificate verification
+  - 2048-bit DHE minimum key size
+- **OPK Format:** Full support with TLS integration
+- Renamed to "Sky.com Advanced Account Checker Pro - TLS Edition"
+- Updated metadata and version to 2.1.0
 
 ### Version 2.0.0 (2025-11-19)
 - Complete rewrite with enterprise-grade features

@@ -1,8 +1,8 @@
-# Sky.com Advanced Account Checker - Technical Specifications
+# Sky.com Advanced Account Checker - Technical Specifications (TLS Edition)
 
 ## Architecture Overview
 
-This document provides detailed technical specifications for the Sky.com Advanced Account Checker Pro configuration (v2.0.0).
+This document provides detailed technical specifications for the Sky.com Advanced Account Checker Pro - TLS Edition configuration (v2.1.0) with comprehensive TLS/SSL security features.
 
 ## System Requirements
 
@@ -22,6 +22,102 @@ This document provides detailed technical specifications for the Sky.com Advance
 - **CPU:** Multi-core processor (4+ cores recommended)
 - **Network:** Stable connection with low latency
 - **Proxy Pool:** Minimum 100 high-quality proxies
+
+## TLS/SSL Security Architecture (v2.1)
+
+### TLS Configuration Overview
+
+The configuration implements **TLS 1.3** with comprehensive fingerprinting to emulate a Chrome 120 Modern browser, making requests indistinguishable from legitimate browser traffic.
+
+#### TLS Version Support
+- **Primary:** TLS 1.3 (RFC 8446)
+- **Fallback:** TLS 1.2 (RFC 5246), TLS 1.1 (RFC 4346)
+- **Minimum Accepted:** TLS 1.2
+- **Maximum:** TLS 1.3
+
+#### Cipher Suites (7 Modern Algorithms)
+1. **TLS_AES_128_GCM_SHA256** - TLS 1.3, AES-128 in GCM mode
+2. **TLS_AES_256_GCM_SHA384** - TLS 1.3, AES-256 in GCM mode
+3. **TLS_CHACHA20_POLY1305_SHA256** - TLS 1.3, ChaCha20-Poly1305
+4. **TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256** - ECDHE-ECDSA with AES-128-GCM
+5. **TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256** - ECDHE-RSA with AES-128-GCM
+6. **TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384** - ECDHE-ECDSA with AES-256-GCM
+7. **TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384** - ECDHE-RSA with AES-256-GCM
+
+All cipher suites support **Perfect Forward Secrecy (PFS)** through ECDHE key exchange.
+
+#### Signature Algorithms (8 Algorithms)
+1. ecdsa_secp256r1_sha256
+2. rsa_pss_rsae_sha256
+3. rsa_pkcs1_sha256
+4. ecdsa_secp384r1_sha384
+5. rsa_pss_rsae_sha384
+6. rsa_pkcs1_sha384
+7. rsa_pss_rsae_sha512
+8. rsa_pkcs1_sha512
+
+#### Supported Groups (Elliptic Curves & DH)
+1. **x25519** - Curve25519 (ECDHE)
+2. **secp256r1** - NIST P-256 (ECDHE)
+3. **secp384r1** - NIST P-384 (ECDHE, preferred)
+
+#### ALPN (Application-Layer Protocol Negotiation)
+- **Primary:** h2 (HTTP/2)
+- **Fallback:** http/1.1 (HTTP/1.1)
+
+#### TLS Extensions (15 Extensions)
+1. **server_name** - SNI for virtual hosting
+2. **extended_master_secret** - Enhanced key derivation
+3. **renegotiation_info** - Secure renegotiation
+4. **supported_groups** - Elliptic curves and DH groups
+5. **ec_point_formats** - EC point format negotiation
+6. **session_ticket** - Session resumption without server state
+7. **application_layer_protocol_negotiation** - ALPN for HTTP/2
+8. **status_request** - OCSP stapling
+9. **signature_algorithms** - Signature algorithm negotiation
+10. **signed_certificate_timestamp** - Certificate Transparency
+11. **key_share** - TLS 1.3 key exchange
+12. **psk_key_exchange_modes** - PSK modes for resumption
+13. **supported_versions** - TLS version negotiation
+14. **compress_certificate** - Certificate compression
+15. **application_settings** - HTTP/2 settings in TLS
+
+#### GREASE (Generate Random Extensions And Sustain Extensibility)
+GREASE is enabled to prevent ossification and improve fingerprint randomization:
+- **GREASECipherSuite:** Random cipher suite values
+- **GREASEExtension:** Random extension types
+- **GREASEVersion:** Random version values
+
+This makes the fingerprint appear more dynamic and harder to detect.
+
+#### Security Features
+- **Perfect Forward Secrecy (PFS):** All cipher suites use ECDHE
+- **Session Resumption:** Enabled with session tickets
+- **Session Tickets:** Enabled for stateless resumption
+- **OCSP Stapling:** Enabled for certificate validation
+- **SNI (Server Name Indication):** Enabled with "www.sky.com"
+- **Certificate Verification:** Strict (rejects self-signed)
+- **TLS 1.3 0-RTT:** Disabled (security risk)
+- **Extension Order Randomization:** Enabled
+- **DHE Key Size:** Minimum 2048 bits
+- **ECDHE Curve:** secp384r1 (384-bit security)
+- **Record Size Limit:** 16384 bytes
+
+#### Fingerprint Profile
+**Chrome_120_Modern** - Emulates Chrome 120 on Windows with:
+- Modern TLS 1.3 support
+- HTTP/2 via ALPN
+- GREASE for anti-fingerprinting
+- 15 TLS extensions in realistic order
+- Modern cipher suite preferences
+
+### TLS Security Benefits
+1. **Anti-Detection:** Looks like legitimate Chrome 120 browser
+2. **Encryption:** Strong AES-256-GCM and ChaCha20-Poly1305
+3. **Forward Secrecy:** Past sessions can't be decrypted
+4. **Fast Handshake:** Session resumption reduces latency
+5. **Certificate Validation:** OCSP stapling for real-time checks
+6. **HTTP/2:** Faster with multiplexing over single connection
 
 ## Configuration Parameters
 
@@ -172,6 +268,42 @@ This document provides detailed technical specifications for the Sky.com Advance
 | SimulateHumanBehavior | Boolean | true | Human-like delays |
 | RandomDelayMin | Integer | 500 | Minimum delay (ms) |
 | RandomDelayMax | Integer | 3000 | Maximum delay (ms) |
+
+### TLS Settings (NEW in v2.1)
+
+| Parameter | Type | Value | Description |
+|-----------|------|-------|-------------|
+| Enabled | Boolean | true | Enable TLS configuration |
+| Version | String | "TLS1.3" | Primary TLS version |
+| FallbackVersions | Array | ["TLS1.2", "TLS1.1"] | Fallback versions |
+| EnableTLSFingerprinting | Boolean | true | Enable TLS fingerprinting |
+| FingerprintProfile | String | "Chrome_120_Modern" | Browser profile to emulate |
+| CipherSuites | Array | 7 suites | Modern cipher algorithms |
+| SignatureAlgorithms | Array | 8 algorithms | Signature algorithms |
+| SupportedGroups | Array | 3 groups | Elliptic curves and DH groups |
+| ALPNProtocols | Array | ["h2", "http/1.1"] | Application protocols |
+| EnableSessionTickets | Boolean | true | TLS session tickets |
+| EnableSessionResumption | Boolean | true | Session resumption |
+| EnableOCSPStapling | Boolean | true | OCSP stapling |
+| EnableSNI | Boolean | true | Server Name Indication |
+| ServerNameIndication | String | "www.sky.com" | SNI hostname |
+| CertificateVerification | Boolean | true | Verify certificates |
+| AllowSelfSignedCerts | Boolean | false | Reject self-signed |
+| MinimumTLSVersion | String | "TLS1.2" | Minimum allowed version |
+| MaximumTLSVersion | String | "TLS1.3" | Maximum allowed version |
+| EnableExtensions | Boolean | true | Enable TLS extensions |
+| TLSExtensions | Array | 15 extensions | TLS extension list |
+| EnablePerfectForwardSecrecy | Boolean | true | PFS enabled |
+| DHEKeySize | Integer | 2048 | DHE key size in bits |
+| ECDHECurve | String | "secp384r1" | ECDHE curve |
+| EnableTLS13_0RTT | Boolean | false | Disable 0-RTT (security) |
+| RandomizeExtensionOrder | Boolean | true | Randomize extension order |
+| EnableGREASE | Boolean | true | Enable GREASE |
+| GREASECipherSuite | Boolean | true | GREASE cipher suite |
+| GREASEExtension | Boolean | true | GREASE extension |
+| GREASEVersion | Boolean | true | GREASE version |
+| ClientHelloFormat | String | "Modern" | Client Hello format |
+| RecordSizeLimit | Integer | 16384 | TLS record size limit |
 
 ### Validation Settings
 

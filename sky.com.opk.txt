@@ -1,12 +1,12 @@
 {
   "Metadata": {
-    "Name": "Sky.com Advanced Account Checker Pro",
+    "Name": "Sky.com Advanced Account Checker Pro - TLS Edition",
     "Author": "legendhkek",
     "Category": "Streaming",
     "CreationDate": "2025-11-19T08:17:00Z",
-    "LastModified": "2025-11-19T10:05:00Z",
-    "Version": "2.0.0",
-    "Description": "Enterprise-grade Sky.com account checker with advanced authentication flows, intelligent retry mechanisms, comprehensive data extraction, anti-bot evasion, session management, 2FA detection, proxy health monitoring, and performance optimizations. Features: CPM 500, Bot 500, connection pooling, exponential backoff, JSON schema validation, account quality scoring, and geographic validation."
+    "LastModified": "2025-11-19T10:22:00Z",
+    "Version": "2.1.0",
+    "Description": "Enterprise-grade Sky.com account checker with advanced TLS 1.3 fingerprinting, modern cipher suites, GREASE support, and comprehensive SSL/TLS security. Includes advanced authentication flows, intelligent retry mechanisms, comprehensive data extraction, anti-bot evasion, session management, 2FA detection, proxy health monitoring, and performance optimizations. Features: CPM 500, Bot 500, TLS 1.3 with fallback, connection pooling, exponential backoff, JSON schema validation, account quality scoring, and geographic validation. Full OPK support with TLS fingerprinting."
   },
   "Settings": {
     "General": {
@@ -137,6 +137,79 @@
       "SimulateHumanBehavior": true,
       "RandomDelayMin": 500,
       "RandomDelayMax": 3000
+    },
+    "TLSSettings": {
+      "Enabled": true,
+      "Version": "TLS1.3",
+      "FallbackVersions": ["TLS1.2", "TLS1.1"],
+      "EnableTLSFingerprinting": true,
+      "FingerprintProfile": "Chrome_120_Modern",
+      "CipherSuites": [
+        "TLS_AES_128_GCM_SHA256",
+        "TLS_AES_256_GCM_SHA384",
+        "TLS_CHACHA20_POLY1305_SHA256",
+        "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+        "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+        "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+        "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+      ],
+      "SignatureAlgorithms": [
+        "ecdsa_secp256r1_sha256",
+        "rsa_pss_rsae_sha256",
+        "rsa_pkcs1_sha256",
+        "ecdsa_secp384r1_sha384",
+        "rsa_pss_rsae_sha384",
+        "rsa_pkcs1_sha384",
+        "rsa_pss_rsae_sha512",
+        "rsa_pkcs1_sha512"
+      ],
+      "SupportedGroups": [
+        "x25519",
+        "secp256r1",
+        "secp384r1"
+      ],
+      "ALPNProtocols": [
+        "h2",
+        "http/1.1"
+      ],
+      "EnableSessionTickets": true,
+      "EnableSessionResumption": true,
+      "EnableOCSPStapling": true,
+      "EnableSNI": true,
+      "ServerNameIndication": "www.sky.com",
+      "CertificateVerification": true,
+      "AllowSelfSignedCerts": false,
+      "MinimumTLSVersion": "TLS1.2",
+      "MaximumTLSVersion": "TLS1.3",
+      "EnableExtensions": true,
+      "TLSExtensions": [
+        "server_name",
+        "extended_master_secret",
+        "renegotiation_info",
+        "supported_groups",
+        "ec_point_formats",
+        "session_ticket",
+        "application_layer_protocol_negotiation",
+        "status_request",
+        "signature_algorithms",
+        "signed_certificate_timestamp",
+        "key_share",
+        "psk_key_exchange_modes",
+        "supported_versions",
+        "compress_certificate",
+        "application_settings"
+      ],
+      "EnablePerfectForwardSecrecy": true,
+      "DHEKeySize": 2048,
+      "ECDHECurve": "secp384r1",
+      "EnableTLS13_0RTT": false,
+      "RandomizeExtensionOrder": true,
+      "EnableGREASE": true,
+      "GREASECipherSuite": true,
+      "GREASEExtension": true,
+      "GREASEVersion": true,
+      "ClientHelloFormat": "Modern",
+      "RecordSizeLimit": 16384
     },
     "ValidationSettings": {
       "EnableJSONSchemaValidation": true,
@@ -929,6 +1002,14 @@
     "ProxyMode": "Required",
     "InputFormat": "Email:Password",
     "AdvancedFeatures": [
+      "TLS 1.3 Fingerprinting",
+      "Modern Cipher Suites",
+      "GREASE Support",
+      "ALPN Negotiation",
+      "Perfect Forward Secrecy",
+      "Session Resumption",
+      "OCSP Stapling",
+      "SNI Support",
       "Exponential Backoff",
       "Circuit Breaker",
       "Connection Pooling",
@@ -958,7 +1039,18 @@
       "EnablePipelining": true
     },
     "Security": {
-      "TLSFingerprint": "Enabled",
+      "TLSVersion": "TLS 1.3",
+      "TLSFallback": ["TLS 1.2", "TLS 1.1"],
+      "TLSFingerprint": "Chrome_120_Modern",
+      "CipherSuites": 7,
+      "SignatureAlgorithms": 8,
+      "SupportedGroups": 3,
+      "ALPN": ["h2", "http/1.1"],
+      "GREASE": "Enabled",
+      "PerfectForwardSecrecy": "Enabled",
+      "SessionResumption": "Enabled",
+      "OCSPStapling": "Enabled",
+      "SNI": "Enabled",
       "HeaderRandomization": "Enabled",
       "UserAgentRotation": "Enabled",
       "FingerprintRandomization": "Enabled"
