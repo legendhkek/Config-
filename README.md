@@ -182,7 +182,7 @@ Advanced error detection and handling:
 
 ## Configuration Structure
 
-### File: `sky.com.opk.txt`
+### File: `sky.com.opk`
 
 The configuration is structured in JSON format with the following sections:
 
