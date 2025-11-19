@@ -4,9 +4,9 @@
 
 This is an **enterprise-grade** Sky.com account checker configuration designed for OpenBullet with **advanced TLS 1.3 fingerprinting** and comprehensive SSL/TLS security features. Includes intelligent retry mechanisms, comprehensive data extraction, anti-bot evasion, session management, 2FA detection, proxy health monitoring, and performance optimizations. **Full OPK format support with TLS.**
 
-**Version:** 2.1.0  
-**Author:** legendhkek  
-**Category:** Streaming  
+**Version:** 2.1.0
+**Author:** legendhkek
+**Category:** Streaming
 **Last Updated:** 2025-11-19
 
 ### 🔐 TLS Edition Highlights
@@ -304,39 +304,39 @@ When loading this configuration in OpenBullet:
 ## Advanced Features Summary
 
 ### TLS/SSL Security (NEW)
-✅ TLS 1.3 Fingerprinting  
-✅ Modern Cipher Suites (7 algorithms)  
-✅ GREASE Support  
-✅ ALPN Negotiation (HTTP/2)  
-✅ Perfect Forward Secrecy  
-✅ Session Resumption  
-✅ OCSP Stapling  
-✅ SNI Support  
-✅ 15 TLS Extensions  
-✅ Extension Order Randomization  
-✅ Chrome 120 Browser Emulation  
+✅ TLS 1.3 Fingerprinting
+✅ Modern Cipher Suites (7 algorithms)
+✅ GREASE Support
+✅ ALPN Negotiation (HTTP/2)
+✅ Perfect Forward Secrecy
+✅ Session Resumption
+✅ OCSP Stapling
+✅ SNI Support
+✅ 15 TLS Extensions
+✅ Extension Order Randomization
+✅ Chrome 120 Browser Emulation
 
 ### Core Features
-✅ Exponential Backoff  
-✅ Circuit Breaker  
-✅ Connection Pooling  
-✅ Anti-Bot Evasion  
-✅ Fingerprint Randomization  
-✅ Session Management  
-✅ 2FA Detection  
-✅ Account Quality Scoring  
-✅ Geo Validation  
-✅ Smart Retry Logic  
-✅ Proxy Health Monitoring  
-✅ Dynamic Threading  
-✅ Adaptive Rate Limiting  
-✅ JSON Schema Validation  
-✅ Comprehensive Data Extraction  
-✅ Multi-Stage Authentication  
-✅ Device Fingerprinting  
-✅ Token Refresh Support  
-✅ Billing Data Capture  
-✅ Subscription Validation  
+✅ Exponential Backoff
+✅ Circuit Breaker
+✅ Connection Pooling
+✅ Anti-Bot Evasion
+✅ Fingerprint Randomization
+✅ Session Management
+✅ 2FA Detection
+✅ Account Quality Scoring
+✅ Geo Validation
+✅ Smart Retry Logic
+✅ Proxy Health Monitoring
+✅ Dynamic Threading
+✅ Adaptive Rate Limiting
+✅ JSON Schema Validation
+✅ Comprehensive Data Extraction
+✅ Multi-Stage Authentication
+✅ Device Fingerprinting
+✅ Token Refresh Support
+✅ Billing Data Capture
+✅ Subscription Validation
 
 ## Security Notice
 
@@ -352,7 +352,7 @@ This configuration is intended for **authorized testing and validation purposes 
 For issues, suggestions, or contributions:
 - **Author:** legendhkek
 - **Repository:** Config-
-- **Version:** 2.0.0
+- **Version:** 2.1.0
 
 ## Changelog
 

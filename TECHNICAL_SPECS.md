@@ -10,7 +10,7 @@ This document provides detailed technical specifications for the Sky.com Advance
 - **Minimum Version:** OpenBullet 1.2.0
 - **Recommended Version:** OpenBullet 2.x or Anomaly
 - **Script Type:** LoliScript 2.0
-- **Required Features:** 
+- **Required Features:**
   - JSON parsing support
   - Advanced threading
   - Proxy management
@@ -527,22 +527,22 @@ This makes the fingerprint appear more dynamic and harder to detect.
 ```
 Algorithm:
   score = 0
-  
+
   if subscription_status == "active":
     score += 3
-  
+
   if is_premium == true:
     score += 2
-  
+
   if payment_method exists:
     score += 2
-  
+
   if device_count > 0:
     score += 1
-  
+
   if expiry_date > current_time:
     score += 2
-  
+
   return score
 ```
 
@@ -573,7 +573,7 @@ Algorithm:
 ## Maintenance & Updates
 
 ### Version Control
-- Current Version: 2.0.0
+- Current Version: 2.1.0
 - Release Date: 2025-11-19
 - Last Modified: 2025-11-19
 
@@ -586,6 +586,6 @@ Algorithm:
 
 ---
 
-**Document Version:** 1.0  
-**Last Updated:** 2025-11-19  
+**Document Version:** 1.0
+**Last Updated:** 2025-11-19
 **Maintained by:** legendhkek
