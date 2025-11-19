@@ -421,6 +421,7 @@ This makes the fingerprint appear more dynamic and harder to detect.
 
 19. Parse Device Data
     ├─ device_count
+    ├─ device_names
     └─ device_types
 
 20. CalculateAccountQuality (Function)
@@ -482,7 +483,8 @@ This makes the fingerprint appear more dynamic and harder to detect.
 | payment_method | String | Payment Method | Billing |
 | card_last4 | String | Card Last 4 | Billing |
 | balance | String | Account Balance | Billing |
-| device_count | Integer | Device Count | Devices |
+| device_count | Integer | Device Count | Devices (REGEX count) |
+| device_names | Array | Device Names | Devices |
 | device_types | Array | Device Types | Devices |
 | quality_score | Integer | Quality Score | Calculated |
 
@@ -573,7 +575,7 @@ Algorithm:
 ## Maintenance & Updates
 
 ### Version Control
-- Current Version: 2.0.0
+- Current Version: 2.1.0
 - Release Date: 2025-11-19
 - Last Modified: 2025-11-19
 

@@ -821,11 +821,32 @@
       },
       {
         "Type": "Parse",
-        "Method": "JSON",
-        "Path": "$.devices[*].name",
+        "Method": "REGEX",
+        "Pattern": "\"name\"\\s*:",
         "VariableName": "device_count",
         "IsCapture": true,
         "CaptureLabel": "Device Count",
+        "Recursive": true,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<device_count>",
+        "Condition": "IsEmpty",
+        "Value": "",
+        "OnMatch": {
+          "Action": "SetVariable",
+          "VariableName": "device_count",
+          "Value": "0"
+        }
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.devices[*].name",
+        "VariableName": "device_names",
+        "IsCapture": true,
+        "CaptureLabel": "Device Names",
         "Recursive": false,
         "OnError": "Continue"
       },
