@@ -182,7 +182,7 @@ Advanced error detection and handling:
 
 ## Configuration Structure
 
-### File: `sky.com.opk.txt`
+### File: `sky.com.opk`
 
 The configuration is structured in JSON format with the following sections:
 
@@ -269,6 +269,8 @@ When loading this configuration in OpenBullet:
 2. **Proxy Type:** HTTP/HTTPS recommended
 3. **Bots:** Start with 100-200, scale up to 500 based on proxy quality
 4. **Capture Settings:** Enable all captures to get full account data
+
+> **Import Tip:** Use the `sky.com.opk` file in this repository when importing into OpenBullet. Older downloads with the `.opk.txt` suffix will not appear in the OpenBullet file picker.
 
 ## Performance Tips
 
