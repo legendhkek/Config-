@@ -352,7 +352,7 @@ This configuration is intended for **authorized testing and validation purposes 
 For issues, suggestions, or contributions:
 - **Author:** legendhkek
 - **Repository:** Config-
-- **Version:** 2.0.0
+- **Version:** 2.1.0
 
 ## Changelog
 
