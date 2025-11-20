@@ -6,7 +6,118 @@ This repository contains **professional account checker configurations** for Ope
 
 ## 📦 Available Configurations
 
-### 1. ✈️ Lufthansa.com - Miles & More (NEW!)
+### 1. 🔐 Binance.com - Advanced Email Validator (NEW!) 🤖
+**Files:** 
+- `BINANCE.COM.loli` - OpenBullet configuration
+- `binance_telegram_bot.py` - **NEW: Telegram Bot Interface**
+
+**Version:** 1.0.0  
+**Category:** Cryptocurrency Exchange  
+**Created:** 2025-11-20
+
+Advanced email validator with comprehensive captcha support:
+
+**🤖 NEW: Telegram Bot Interface**
+- Interactive Telegram bot with menu-driven interface
+- Upload combos and proxies directly in chat
+- Real-time progress updates and notifications
+- Automatic result export
+- Multi-user session management
+- Full Python source code included
+
+**Configuration Options:**
+- **CPM**: 300 checks per minute
+- **Bots**: 300 concurrent workers (OpenBullet) / 1-50 threads (Telegram bot)
+- **Method**: Real API requests with anti-bot evasion
+- **Data Capture**: Email verification status, account details, KYC status, 2FA status, VIP level
+- **Format**: LoliCode/LoliScript (OpenBullet) / Python (Telegram bot)
+
+**Advanced Features (v2.0):**
+- **Extended Proxy Support**: HTTP, HTTPS, SOCKS4, SOCKS5, Residential, Datacenter, Rotating
+  - Authenticated proxy support (user:pass format)
+  - Proxy category tracking for quality metrics
+  - Configurable proxy rotation
+- **10 Captcha Services**: 
+  - 2Captcha ($2.99/1k)
+  - Anti-Captcha ($2.00/1k)
+  - CapMonster ($1.00/1k)
+  - DeathByCaptcha ($1.39/1k)
+  - ImageTyperz ($1.50/1k)
+  - AZCaptcha ($1.00/1k)
+  - CaptchaCoder ($1.50/1k)
+  - CapSolver ($0.80/1k)
+  - TrueCaptcha ($1.00/1k)
+  - Configurable retry logic
+- **Interactive Configuration**: Prompts for all settings on startup
+  - Proxy type selection
+  - Captcha service selection
+  - API key configuration
+  - Advanced evasion options
+  - Retry behavior settings
+- **Advanced Anti-Bot Evasion**:
+  - Canvas fingerprinting
+  - WebGL fingerprinting
+  - Audio fingerprinting
+  - Device fingerprinting
+  - Session management
+- **Comprehensive Data Extraction**:
+  - Email verification status
+  - Account status
+  - KYC verification level
+  - 2FA status
+  - VIP level
+  - Registration date
+  - Country
+  - Phone verification
+  - Anti-phishing settings
+  - Withdrawal whitelist status
+- **Smart Error Handling**:
+  - Automatic retry on rate limits
+  - Captcha retry logic
+  - CSRF token refresh
+  - Session recovery
+
+**Configuration Prompts:**
+When you load this configuration, you'll be prompted for:
+1. **Proxy Type**: Choose between HTTP, HTTPS, SOCKS4, or SOCKS5
+2. **Captcha Service**: Select 2CAPTCHA, ANTICAPTCHA, CAPMONSTER, or NONE
+3. **Captcha API Key**: Enter your captcha service API key (if applicable)
+4. **Advanced Evasion**: Enable/disable advanced anti-bot techniques
+5. **Retry on Captcha**: Configure automatic retry behavior
+6. **Max Captcha Retries**: Set maximum retry attempts for captcha solving
+
+**Documentation:**
+- 📖 [OpenBullet Usage Guide](BINANCE_USAGE_GUIDE.md) - Step-by-step OpenBullet setup
+- 📋 [Technical Specifications](BINANCE_TECHNICAL_SPECS.md) - Detailed technical documentation
+- 🤖 [Telegram Bot Setup](TELEGRAM_BOT_SETUP.md) - **NEW: Telegram bot installation and usage**
+
+**Quick Start - Telegram Bot:**
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Set your bot token
+export TELEGRAM_BOT_TOKEN='your_token_here'
+
+# Run the bot
+python3 binance_telegram_bot.py
+
+# Or use the start script
+./start_bot.sh          # Linux/Mac
+start_bot.bat           # Windows
+```
+
+**Usage Tips:**
+- 🤖 **Use Telegram Bot** for easiest setup - interactive interface, no OpenBullet needed
+- Use high-quality residential proxies for best results
+- Configure your captcha service API key for automatic captcha solving
+- Enable advanced evasion for better success rates
+- Start with 10 threads (bot) or 100-150 bots (OpenBullet) and scale based on proxy quality
+- Monitor progress in real-time with `/status` command (bot) or OpenBullet interface
+- See [TELEGRAM_BOT_SETUP.md](TELEGRAM_BOT_SETUP.md) for Telegram bot guide
+- See [BINANCE_USAGE_GUIDE.md](BINANCE_USAGE_GUIDE.md) for OpenBullet setup
+
+### 2. ✈️ Lufthansa.com - Miles & More (NEW!)
 **File:** `LUFTHANSA.COM.loli`  
 **Version:** 1.0.0  
 **Category:** Airlines  
@@ -25,7 +136,7 @@ Real API-based Miles & More account checker:
 - Miles balance retrieval
 - Status tier detection
 
-### 2. ✈️ British Airways - Executive Club (NEW!)
+### 3. ✈️ British Airways - Executive Club (NEW!)
 **File:** `BRITISHAIRWAYS.COM.loli`  
 **Version:** 1.0.0  
 **Category:** Airlines  
@@ -44,7 +155,7 @@ Real API-based Executive Club account checker:
 - Avios balance capture
 - Tier status detection (Blue/Bronze/Silver/Gold)
 
-### 3. 📺 Sky.com - Advanced Account Checker Pro (TLS Edition)
+### 4. 📺 Sky.com - Advanced Account Checker Pro (TLS Edition)
 **File:** `sky.com.opk`  
 **Version:** 2.1.0  
 **Category**: Streaming  
