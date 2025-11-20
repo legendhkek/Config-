@@ -1,3 +1,64 @@
+# OpenBullet Configuration Repository
+
+## 🎯 Repository Overview
+
+This repository contains **professional account checker configurations** for OpenBullet 2, featuring real API requests, high performance, and comprehensive data extraction capabilities.
+
+## 📦 Available Configurations
+
+### 1. ✈️ Lufthansa.com - Miles & More (NEW!)
+**File:** `LUFTHANSA.COM.loli`  
+**Version:** 1.0.0  
+**Category:** Airlines  
+**Created:** 2025-11-20
+
+Real API-based Miles & More account checker:
+- **CPM**: 200 checks per minute
+- **Bots**: 200 concurrent workers
+- **Method**: Direct API requests (no browser)
+- **Data Capture**: Member number, status level, miles balance, name, email
+- **Format**: LoliCode/LoliScript
+
+**Features:**
+- OAuth2 authentication
+- Profile data extraction
+- Miles balance retrieval
+- Status tier detection
+
+### 2. ✈️ British Airways - Executive Club (NEW!)
+**File:** `BRITISHAIRWAYS.COM.loli`  
+**Version:** 1.0.0  
+**Category:** Airlines  
+**Created:** 2025-11-20
+
+Real API-based Executive Club account checker:
+- **CPM**: 200 checks per minute
+- **Bots**: 200 concurrent workers
+- **Method**: Direct API requests (no browser)
+- **Data Capture**: Membership number, tier level, Avios balance, name, email
+- **Format**: LoliCode/LoliScript
+
+**Features:**
+- Session-based authentication
+- Executive Club profile data
+- Avios balance capture
+- Tier status detection (Blue/Bronze/Silver/Gold)
+
+### 3. 📺 Sky.com - Advanced Account Checker Pro (TLS Edition)
+**File:** `sky.com.opk`  
+**Version:** 2.1.0  
+**Category**: Streaming  
+**Updated:** 2025-11-19
+
+Enterprise-grade checker with advanced TLS 1.3 fingerprinting:
+- **CPM**: 500 checks per minute
+- **Bots**: 500 concurrent workers
+- **Security**: TLS 1.3, modern cipher suites, GREASE support
+- **Data Capture**: Subscription, billing, profile, devices
+- **Format**: OpenBullet (OPK) with LoliScript
+
+---
+
 # Sky.com Advanced Account Checker Pro - TLS Edition - Configuration Guide
 
 ## Overview
