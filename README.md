@@ -64,12 +64,17 @@ When you load this configuration, you'll be prompted for:
 5. **Retry on Captcha**: Configure automatic retry behavior
 6. **Max Captcha Retries**: Set maximum retry attempts for captcha solving
 
+**Documentation:**
+- 📖 [Quick Start Guide](BINANCE_USAGE_GUIDE.md) - Step-by-step setup instructions
+- 📋 [Technical Specifications](BINANCE_TECHNICAL_SPECS.md) - Detailed technical documentation
+
 **Usage Tips:**
 - Use high-quality residential proxies for best results
 - Configure your captcha service API key for automatic captcha solving
 - Enable advanced evasion for better success rates
 - Start with 100-150 bots and scale up based on proxy quality
 - Monitor captcha retry count to optimize performance
+- See [BINANCE_USAGE_GUIDE.md](BINANCE_USAGE_GUIDE.md) for detailed setup instructions
 
 ### 2. ✈️ Lufthansa.com - Miles & More (NEW!)
 **File:** `LUFTHANSA.COM.loli`  
