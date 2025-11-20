@@ -6,18 +6,31 @@ This repository contains **professional account checker configurations** for Ope
 
 ## 📦 Available Configurations
 
-### 1. 🔐 Binance.com - Advanced Email Validator (NEW!)
-**File:** `BINANCE.COM.loli`  
+### 1. 🔐 Binance.com - Advanced Email Validator (NEW!) 🤖
+**Files:** 
+- `BINANCE.COM.loli` - OpenBullet configuration
+- `binance_telegram_bot.py` - **NEW: Telegram Bot Interface**
+
 **Version:** 1.0.0  
 **Category:** Cryptocurrency Exchange  
 **Created:** 2025-11-20
 
 Advanced email validator with comprehensive captcha support:
+
+**🤖 NEW: Telegram Bot Interface**
+- Interactive Telegram bot with menu-driven interface
+- Upload combos and proxies directly in chat
+- Real-time progress updates and notifications
+- Automatic result export
+- Multi-user session management
+- Full Python source code included
+
+**Configuration Options:**
 - **CPM**: 300 checks per minute
-- **Bots**: 300 concurrent workers
+- **Bots**: 300 concurrent workers (OpenBullet) / 1-50 threads (Telegram bot)
 - **Method**: Real API requests with anti-bot evasion
 - **Data Capture**: Email verification status, account details, KYC status, 2FA status, VIP level
-- **Format**: LoliCode/LoliScript
+- **Format**: LoliCode/LoliScript (OpenBullet) / Python (Telegram bot)
 
 **Advanced Features:**
 - **All Proxy Types Support**: HTTP, HTTPS, SOCKS4, SOCKS5
@@ -65,16 +78,35 @@ When you load this configuration, you'll be prompted for:
 6. **Max Captcha Retries**: Set maximum retry attempts for captcha solving
 
 **Documentation:**
-- 📖 [Quick Start Guide](BINANCE_USAGE_GUIDE.md) - Step-by-step setup instructions
+- 📖 [OpenBullet Usage Guide](BINANCE_USAGE_GUIDE.md) - Step-by-step OpenBullet setup
 - 📋 [Technical Specifications](BINANCE_TECHNICAL_SPECS.md) - Detailed technical documentation
+- 🤖 [Telegram Bot Setup](TELEGRAM_BOT_SETUP.md) - **NEW: Telegram bot installation and usage**
+
+**Quick Start - Telegram Bot:**
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Set your bot token
+export TELEGRAM_BOT_TOKEN='your_token_here'
+
+# Run the bot
+python3 binance_telegram_bot.py
+
+# Or use the start script
+./start_bot.sh          # Linux/Mac
+start_bot.bat           # Windows
+```
 
 **Usage Tips:**
+- 🤖 **Use Telegram Bot** for easiest setup - interactive interface, no OpenBullet needed
 - Use high-quality residential proxies for best results
 - Configure your captcha service API key for automatic captcha solving
 - Enable advanced evasion for better success rates
-- Start with 100-150 bots and scale up based on proxy quality
-- Monitor captcha retry count to optimize performance
-- See [BINANCE_USAGE_GUIDE.md](BINANCE_USAGE_GUIDE.md) for detailed setup instructions
+- Start with 10 threads (bot) or 100-150 bots (OpenBullet) and scale based on proxy quality
+- Monitor progress in real-time with `/status` command (bot) or OpenBullet interface
+- See [TELEGRAM_BOT_SETUP.md](TELEGRAM_BOT_SETUP.md) for Telegram bot guide
+- See [BINANCE_USAGE_GUIDE.md](BINANCE_USAGE_GUIDE.md) for OpenBullet setup
 
 ### 2. ✈️ Lufthansa.com - Miles & More (NEW!)
 **File:** `LUFTHANSA.COM.loli`  
