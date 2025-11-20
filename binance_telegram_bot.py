@@ -5,15 +5,18 @@ Advanced Telegram bot for checking Binance accounts with multi-proxy and captcha
 
 Features:
 - Interactive Telegram interface
-- All proxy types support (HTTP/HTTPS/SOCKS4/SOCKS5)
-- Multiple captcha services (2Captcha/Anti-Captcha/CapMonster)
+- Extended proxy support (HTTP/HTTPS/SOCKS4/SOCKS5/Residential/Datacenter/Rotating)
+- Authenticated proxy support (user:pass format)
+- 10 captcha services (2Captcha/Anti-Captcha/CapMonster/DeathByCaptcha/ImageTyperz/AZCaptcha/CaptchaCoder/CapSolver/TrueCaptcha)
+- Proxy category tracking (Residential/Datacenter/Mobile/Rotating)
 - Real-time progress updates
 - Result export in multiple formats
 - Advanced error handling
 - Multi-user support with session management
+- Proxy rotation control
 
 Author: legendhkek
-Version: 1.0.0
+Version: 2.0.0
 """
 
 import asyncio
@@ -74,6 +77,18 @@ class ProxyType(Enum):
     HTTPS = "https"
     SOCKS4 = "socks4"
     SOCKS5 = "socks5"
+    # Advanced proxy types
+    RESIDENTIAL = "residential"
+    DATACENTER = "datacenter"
+    ROTATING = "rotating"
+
+
+class ProxyCategory(Enum):
+    """Proxy category for quality tracking"""
+    RESIDENTIAL = "residential"
+    DATACENTER = "datacenter"
+    MOBILE = "mobile"
+    ROTATING = "rotating"
 
 
 class CaptchaService(Enum):
@@ -82,6 +97,13 @@ class CaptchaService(Enum):
     TWOCAPTCHA = "2captcha"
     ANTICAPTCHA = "anticaptcha"
     CAPMONSTER = "capmonster"
+    # Additional captcha services
+    DEATHBYCAPTCHA = "deathbycaptcha"
+    IMAGETYPERZ = "imagetyperz"
+    AZCAPTCHA = "azcaptcha"
+    CAPTCHACODER = "captchacoder"
+    CAPSOLVER = "capsolver"
+    TRUECAPTCHA = "truecaptcha"
 
 
 @dataclass
@@ -113,15 +135,19 @@ class UserSession:
     combos: List[Tuple[str, str]] = None
     proxies: List[str] = None
     proxy_type: ProxyType = ProxyType.HTTP
+    proxy_category: ProxyCategory = ProxyCategory.DATACENTER
     captcha_service: CaptchaService = CaptchaService.NONE
     captcha_api_key: str = ""
     use_advanced_evasion: bool = True
     retry_on_captcha: bool = True
     max_captcha_retries: int = 3
     max_threads: int = 10
+    proxy_rotation_enabled: bool = True
+    proxy_timeout: int = 30
     results: List[CheckResult] = None
     is_checking: bool = False
     progress: Dict = None
+    proxy_stats: Dict = None
 
     def __post_init__(self):
         if self.combos is None:
@@ -139,6 +165,13 @@ class UserSession:
                 'errors': 0,
                 'start_time': None
             }
+        if self.proxy_stats is None:
+            self.proxy_stats = {
+                'working': 0,
+                'failed': 0,
+                'banned': 0,
+                'total_used': 0
+            }
 
 
 class BinanceChecker:
@@ -151,17 +184,37 @@ class BinanceChecker:
         self.proxy_index = 0
         
     def get_next_proxy(self) -> Optional[Dict]:
-        """Get next proxy in rotation"""
+        """Get next proxy in rotation with advanced support"""
         if not self.session.proxies:
             return None
         
-        proxy_str = self.session.proxies[self.proxy_index]
-        self.proxy_index = (self.proxy_index + 1) % len(self.session.proxies)
+        if not self.session.proxy_rotation_enabled and self.proxy_index > 0:
+            # Use same proxy if rotation disabled
+            proxy_str = self.session.proxies[0]
+        else:
+            # Round-robin rotation
+            proxy_str = self.session.proxies[self.proxy_index]
+            self.proxy_index = (self.proxy_index + 1) % len(self.session.proxies)
         
-        # Parse proxy string
+        # Parse proxy string - supports ip:port or ip:port:user:pass
         parts = proxy_str.split(':')
         if len(parts) >= 2:
-            proxy_url = f"{self.session.proxy_type.value}://{proxy_str}"
+            # Determine protocol based on proxy type
+            protocol = self.session.proxy_type.value
+            if protocol in ['residential', 'datacenter', 'rotating']:
+                # Default to socks5 for these types
+                protocol = 'socks5'
+            
+            # Handle authenticated proxies (user:pass format)
+            if len(parts) == 4:
+                # Format: ip:port:user:pass
+                ip, port, user, password = parts
+                proxy_url = f"{protocol}://{user}:{password}@{ip}:{port}"
+            else:
+                # Format: ip:port
+                proxy_url = f"{protocol}://{proxy_str}"
+            
+            self.session.proxy_stats['total_used'] += 1
             return {"http": proxy_url, "https": proxy_url}
         return None
     
@@ -177,6 +230,18 @@ class BinanceChecker:
                 return await self._solve_anticaptcha(site_key, page_url)
             elif self.session.captcha_service == CaptchaService.CAPMONSTER:
                 return await self._solve_capmonster(site_key, page_url)
+            elif self.session.captcha_service == CaptchaService.DEATHBYCAPTCHA:
+                return await self._solve_deathbycaptcha(site_key, page_url)
+            elif self.session.captcha_service == CaptchaService.IMAGETYPERZ:
+                return await self._solve_imagetyperz(site_key, page_url)
+            elif self.session.captcha_service == CaptchaService.AZCAPTCHA:
+                return await self._solve_azcaptcha(site_key, page_url)
+            elif self.session.captcha_service == CaptchaService.CAPTCHACODER:
+                return await self._solve_captchacoder(site_key, page_url)
+            elif self.session.captcha_service == CaptchaService.CAPSOLVER:
+                return await self._solve_capsolver(site_key, page_url)
+            elif self.session.captcha_service == CaptchaService.TRUECAPTCHA:
+                return await self._solve_truecaptcha(site_key, page_url)
         except Exception as e:
             logger.error(f"Captcha solving error: {e}")
         return None
@@ -273,6 +338,206 @@ class BinanceChecker:
                     data = await resp.json()
                     if data.get('status') == 'ready':
                         return data.get('solution', {}).get('gRecaptchaResponse')
+                await asyncio.sleep(5)
+        return None
+    
+    async def _solve_deathbycaptcha(self, site_key: str, page_url: str) -> Optional[str]:
+        """Solve captcha using DeathByCaptcha"""
+        api_key = self.session.captcha_api_key
+        username, password = api_key.split(':', 1) if ':' in api_key else (api_key, '')
+        
+        async with aiohttp.ClientSession() as session:
+            # Submit captcha
+            create_url = "http://deathbycaptcha.com/api/captcha"
+            payload = {
+                "username": username,
+                "password": password,
+                "type": 4,
+                "token_params": json.dumps({
+                    "googlekey": site_key,
+                    "pageurl": page_url
+                })
+            }
+            async with session.post(create_url, data=payload) as resp:
+                data = await resp.json()
+                if not data.get('captcha'):
+                    return None
+                captcha_id = data.get('captcha')
+            
+            # Wait and get result
+            await asyncio.sleep(20)
+            
+            for _ in range(10):
+                result_url = f"http://deathbycaptcha.com/api/captcha/{captcha_id}"
+                async with session.get(result_url) as resp:
+                    data = await resp.json()
+                    if data.get('text'):
+                        return data.get('text')
+                await asyncio.sleep(5)
+        return None
+    
+    async def _solve_imagetyperz(self, site_key: str, page_url: str) -> Optional[str]:
+        """Solve captcha using ImageTyperz"""
+        api_key = self.session.captcha_api_key
+        
+        async with aiohttp.ClientSession() as session:
+            # Submit captcha
+            submit_url = f"http://captchatypers.com/Forms/UploadFileAndGetTextNEW.ashx"
+            payload = {
+                "action": "UPLOADCAPTCHA",
+                "username": api_key,
+                "pageurl": page_url,
+                "sitekey": site_key,
+                "captchatype": "3"
+            }
+            async with session.post(submit_url, data=payload) as resp:
+                response_text = await resp.text()
+                if not response_text or '|' not in response_text:
+                    return None
+                captcha_id = response_text.split('|')[0]
+            
+            # Wait and get result
+            await asyncio.sleep(20)
+            
+            for _ in range(10):
+                result_url = f"http://captchatypers.com/captchaapi/GetCaptchaResponseV2.ashx?action=GETTEXT&username={api_key}&captchaid={captcha_id}"
+                async with session.get(result_url) as resp:
+                    response_text = await resp.text()
+                    if 'NOT_DECODED' not in response_text and response_text:
+                        return response_text
+                await asyncio.sleep(5)
+        return None
+    
+    async def _solve_azcaptcha(self, site_key: str, page_url: str) -> Optional[str]:
+        """Solve captcha using AZCaptcha"""
+        api_key = self.session.captcha_api_key
+        
+        async with aiohttp.ClientSession() as session:
+            # Submit captcha
+            submit_url = f"https://azcaptcha.com/in.php?key={api_key}&method=userrecaptcha&googlekey={site_key}&pageurl={page_url}&json=1"
+            async with session.get(submit_url) as resp:
+                data = await resp.json()
+                if data.get('status') != 1:
+                    return None
+                captcha_id = data.get('request')
+            
+            # Wait and get result
+            await asyncio.sleep(20)
+            
+            for _ in range(10):
+                result_url = f"https://azcaptcha.com/res.php?key={api_key}&action=get&id={captcha_id}&json=1"
+                async with session.get(result_url) as resp:
+                    data = await resp.json()
+                    if data.get('status') == 1:
+                        return data.get('request')
+                    elif data.get('request') != 'CAPCHA_NOT_READY':
+                        return None
+                await asyncio.sleep(5)
+        return None
+    
+    async def _solve_captchacoder(self, site_key: str, page_url: str) -> Optional[str]:
+        """Solve captcha using CaptchaCoder"""
+        api_key = self.session.captcha_api_key
+        
+        async with aiohttp.ClientSession() as session:
+            # Submit captcha
+            create_url = "http://www.captchacoder.com/api/"
+            payload = {
+                "key": api_key,
+                "method": "userrecaptcha",
+                "googlekey": site_key,
+                "pageurl": page_url,
+                "json": 1
+            }
+            async with session.post(create_url, data=payload) as resp:
+                data = await resp.json()
+                if data.get('status') != 1:
+                    return None
+                captcha_id = data.get('request')
+            
+            # Wait and get result
+            await asyncio.sleep(20)
+            
+            for _ in range(10):
+                result_url = f"http://www.captchacoder.com/api/?key={api_key}&action=get&id={captcha_id}&json=1"
+                async with session.get(result_url) as resp:
+                    data = await resp.json()
+                    if data.get('status') == 1:
+                        return data.get('request')
+                    elif data.get('request') != 'CAPCHA_NOT_READY':
+                        return None
+                await asyncio.sleep(5)
+        return None
+    
+    async def _solve_capsolver(self, site_key: str, page_url: str) -> Optional[str]:
+        """Solve captcha using CapSolver"""
+        api_key = self.session.captcha_api_key
+        
+        async with aiohttp.ClientSession() as session:
+            # Create task
+            create_url = "https://api.capsolver.com/createTask"
+            payload = {
+                "clientKey": api_key,
+                "task": {
+                    "type": "ReCaptchaV2TaskProxyLess",
+                    "websiteURL": page_url,
+                    "websiteKey": site_key
+                }
+            }
+            async with session.post(create_url, json=payload) as resp:
+                data = await resp.json()
+                if data.get('errorId') != 0:
+                    return None
+                task_id = data.get('taskId')
+            
+            # Wait and get result
+            await asyncio.sleep(20)
+            
+            result_url = "https://api.capsolver.com/getTaskResult"
+            for _ in range(10):
+                payload = {"clientKey": api_key, "taskId": task_id}
+                async with session.post(result_url, json=payload) as resp:
+                    data = await resp.json()
+                    if data.get('status') == 'ready':
+                        return data.get('solution', {}).get('gRecaptchaResponse')
+                await asyncio.sleep(5)
+        return None
+    
+    async def _solve_truecaptcha(self, site_key: str, page_url: str) -> Optional[str]:
+        """Solve captcha using TrueCaptcha"""
+        api_key = self.session.captcha_api_key
+        username, apikey = api_key.split(':', 1) if ':' in api_key else ('', api_key)
+        
+        async with aiohttp.ClientSession() as session:
+            # Submit captcha
+            create_url = "https://api.truecaptcha.org/v1/captcha"
+            payload = {
+                "userid": username,
+                "apikey": apikey,
+                "case": "mixed",
+                "mode": "human",
+                "data": {
+                    "type": "recaptcha",
+                    "pageurl": page_url,
+                    "googlekey": site_key
+                }
+            }
+            async with session.post(create_url, json=payload) as resp:
+                data = await resp.json()
+                if not data.get('success'):
+                    return None
+                captcha_id = data.get('id')
+            
+            # Wait and get result
+            await asyncio.sleep(20)
+            
+            for _ in range(10):
+                result_url = f"https://api.truecaptcha.org/v1/result/{captcha_id}"
+                headers = {"apikey": apikey, "userid": username}
+                async with session.get(result_url, headers=headers) as resp:
+                    data = await resp.json()
+                    if data.get('success') and data.get('result'):
+                        return data.get('result')
                 await asyncio.sleep(5)
         return None
     
@@ -658,20 +923,24 @@ class BinanceTelegramBot:
         config_text = (
             f"⚙️ *Current Configuration*\n\n"
             f"🌐 Proxy Type: `{session.proxy_type.value.upper()}`\n"
+            f"📦 Proxy Category: `{session.proxy_category.value.upper()}`\n"
             f"🔐 Captcha Service: `{session.captcha_service.value.upper()}`\n"
             f"🛡️ Advanced Evasion: `{'ON' if session.use_advanced_evasion else 'OFF'}`\n"
             f"🔄 Retry on Captcha: `{'YES' if session.retry_on_captcha else 'NO'}`\n"
             f"🔢 Max Captcha Retries: `{session.max_captcha_retries}`\n"
-            f"🧵 Max Threads: `{session.max_threads}`\n\n"
+            f"🧵 Max Threads: `{session.max_threads}`\n"
+            f"🔁 Proxy Rotation: `{'ON' if session.proxy_rotation_enabled else 'OFF'}`\n\n"
             f"Select setting to change:"
         )
         
         keyboard = [
             [InlineKeyboardButton("🌐 Change Proxy Type", callback_data="set_proxy_type")],
+            [InlineKeyboardButton("📦 Change Proxy Category", callback_data="set_proxy_category")],
             [InlineKeyboardButton("🔐 Change Captcha Service", callback_data="set_captcha")],
             [InlineKeyboardButton("🔑 Set Captcha API Key", callback_data="set_captcha_key")],
             [InlineKeyboardButton("🛡️ Toggle Advanced Evasion", callback_data="toggle_evasion")],
             [InlineKeyboardButton("🔄 Toggle Captcha Retry", callback_data="toggle_retry")],
+            [InlineKeyboardButton("🔁 Toggle Proxy Rotation", callback_data="toggle_rotation")],
             [InlineKeyboardButton("🔢 Set Max Retries", callback_data="set_max_retries")],
             [InlineKeyboardButton("🧵 Set Max Threads", callback_data="set_threads")],
             [InlineKeyboardButton("◀️ Back to Menu", callback_data="back_menu")]
@@ -701,27 +970,55 @@ class BinanceTelegramBot:
                 [InlineKeyboardButton("HTTPS", callback_data="proxy_https")],
                 [InlineKeyboardButton("SOCKS4", callback_data="proxy_socks4")],
                 [InlineKeyboardButton("SOCKS5", callback_data="proxy_socks5")],
+                [InlineKeyboardButton("Residential (SOCKS5)", callback_data="proxy_residential")],
+                [InlineKeyboardButton("Datacenter (HTTP)", callback_data="proxy_datacenter")],
+                [InlineKeyboardButton("Rotating (SOCKS5)", callback_data="proxy_rotating")],
                 [InlineKeyboardButton("◀️ Back", callback_data="back_config")]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             await query.edit_message_text(
-                "🌐 *Select Proxy Type*",
+                "🌐 *Select Proxy Type*\n\n"
+                "Choose protocol or category:",
                 parse_mode='Markdown',
                 reply_markup=reply_markup
             )
             return States.SELECT_PROXY_TYPE.value
         
-        elif action == "set_captcha":
+        elif action == "set_proxy_category":
             keyboard = [
-                [InlineKeyboardButton("NONE (No Captcha)", callback_data="captcha_none")],
-                [InlineKeyboardButton("2Captcha", callback_data="captcha_2captcha")],
-                [InlineKeyboardButton("Anti-Captcha", callback_data="captcha_anticaptcha")],
-                [InlineKeyboardButton("CapMonster", callback_data="captcha_capmonster")],
+                [InlineKeyboardButton("📱 Residential", callback_data="category_residential")],
+                [InlineKeyboardButton("🏢 Datacenter", callback_data="category_datacenter")],
+                [InlineKeyboardButton("📲 Mobile", callback_data="category_mobile")],
+                [InlineKeyboardButton("🔄 Rotating", callback_data="category_rotating")],
                 [InlineKeyboardButton("◀️ Back", callback_data="back_config")]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             await query.edit_message_text(
-                "🔐 *Select Captcha Service*",
+                "📦 *Select Proxy Category*\n\n"
+                "For quality tracking:",
+                parse_mode='Markdown',
+                reply_markup=reply_markup
+            )
+            return States.CONFIGURE_SETTINGS.value
+        
+        elif action == "set_captcha":
+            keyboard = [
+                [InlineKeyboardButton("❌ NONE (No Captcha)", callback_data="captcha_none")],
+                [InlineKeyboardButton("2️⃣ 2Captcha ($2.99/1k)", callback_data="captcha_2captcha")],
+                [InlineKeyboardButton("🛡️ Anti-Captcha ($2.00/1k)", callback_data="captcha_anticaptcha")],
+                [InlineKeyboardButton("👾 CapMonster ($1.00/1k)", callback_data="captcha_capmonster")],
+                [InlineKeyboardButton("💀 DeathByCaptcha", callback_data="captcha_deathbycaptcha")],
+                [InlineKeyboardButton("🖼️ ImageTyperz", callback_data="captcha_imagetyperz")],
+                [InlineKeyboardButton("🅰️ AZCaptcha", callback_data="captcha_azcaptcha")],
+                [InlineKeyboardButton("💻 CaptchaCoder", callback_data="captcha_captchacoder")],
+                [InlineKeyboardButton("🔐 CapSolver", callback_data="captcha_capsolver")],
+                [InlineKeyboardButton("✅ TrueCaptcha", callback_data="captcha_truecaptcha")],
+                [InlineKeyboardButton("◀️ Back", callback_data="back_config")]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            await query.edit_message_text(
+                "🔐 *Select Captcha Service*\n\n"
+                "Choose your captcha solving service:",
                 parse_mode='Markdown',
                 reply_markup=reply_markup
             )
@@ -743,6 +1040,17 @@ class BinanceTelegramBot:
         elif action == "toggle_retry":
             session.retry_on_captcha = not session.retry_on_captcha
             await query.answer(f"Captcha retry: {'ON' if session.retry_on_captcha else 'OFF'}")
+            return await self.show_configuration_menu(query)
+        
+        elif action == "toggle_rotation":
+            session.proxy_rotation_enabled = not session.proxy_rotation_enabled
+            await query.answer(f"Proxy rotation: {'ON' if session.proxy_rotation_enabled else 'OFF'}")
+            return await self.show_configuration_menu(query)
+        
+        elif action.startswith("category_"):
+            category = action.replace("category_", "")
+            session.proxy_category = ProxyCategory(category)
+            await query.answer(f"Proxy category set to: {category.upper()}")
             return await self.show_configuration_menu(query)
         
         elif action == "back_config":

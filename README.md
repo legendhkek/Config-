@@ -32,12 +32,21 @@ Advanced email validator with comprehensive captcha support:
 - **Data Capture**: Email verification status, account details, KYC status, 2FA status, VIP level
 - **Format**: LoliCode/LoliScript (OpenBullet) / Python (Telegram bot)
 
-**Advanced Features:**
-- **All Proxy Types Support**: HTTP, HTTPS, SOCKS4, SOCKS5
-- **Multiple Captcha Services**: 
-  - 2Captcha integration
-  - Anti-Captcha integration
-  - CapMonster integration
+**Advanced Features (v2.0):**
+- **Extended Proxy Support**: HTTP, HTTPS, SOCKS4, SOCKS5, Residential, Datacenter, Rotating
+  - Authenticated proxy support (user:pass format)
+  - Proxy category tracking for quality metrics
+  - Configurable proxy rotation
+- **10 Captcha Services**: 
+  - 2Captcha ($2.99/1k)
+  - Anti-Captcha ($2.00/1k)
+  - CapMonster ($1.00/1k)
+  - DeathByCaptcha ($1.39/1k)
+  - ImageTyperz ($1.50/1k)
+  - AZCaptcha ($1.00/1k)
+  - CaptchaCoder ($1.50/1k)
+  - CapSolver ($0.80/1k)
+  - TrueCaptcha ($1.00/1k)
   - Configurable retry logic
 - **Interactive Configuration**: Prompts for all settings on startup
   - Proxy type selection

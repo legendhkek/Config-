@@ -2,14 +2,14 @@
 
 ## 🤖 Overview
 
-This advanced Telegram bot provides a user-friendly interface for checking Binance accounts with full proxy and captcha support.
+This advanced Telegram bot provides a user-friendly interface for checking Binance accounts with extensive proxy and captcha support.
 
 ## ✨ Features
 
 ### Core Functionality
 - ✅ **Interactive Telegram Interface** - Easy-to-use menu system
-- ✅ **All Proxy Types** - HTTP, HTTPS, SOCKS4, SOCKS5 support
-- ✅ **Multiple Captcha Services** - 2Captcha, Anti-Captcha, CapMonster
+- ✅ **All Proxy Types** - HTTP, HTTPS, SOCKS4, SOCKS5, Residential, Datacenter, Rotating
+- ✅ **10 Captcha Services** - 2Captcha, Anti-Captcha, CapMonster, DeathByCaptcha, ImageTyperz, AZCaptcha, CaptchaCoder, CapSolver, TrueCaptcha
 - ✅ **Real-time Progress** - Live updates during checking
 - ✅ **Multi-threading** - Configurable concurrent checks (1-50 threads)
 - ✅ **Result Export** - Automatic export to text files
@@ -39,6 +39,12 @@ This advanced Telegram bot provides a user-friendly interface for checking Binan
    - [2Captcha](https://2captcha.com) - $2.99/1000 solves
    - [Anti-Captcha](https://anti-captcha.com) - $2.00/1000 solves
    - [CapMonster](https://capmonster.cloud) - $1.00/1000 solves (cheapest)
+   - [DeathByCaptcha](https://deathbycaptcha.com) - $1.39/1000 solves
+   - [ImageTyperz](https://www.imagetyperz.com) - $1.50/1000 solves
+   - [AZCaptcha](https://azcaptcha.com) - $1.00/1000 solves
+   - [CaptchaCoder](https://www.captchacoder.com) - $1.50/1000 solves
+   - [CapSolver](https://www.capsolver.com) - $0.80/1000 solves
+   - [TrueCaptcha](https://truecaptcha.org) - $1.00/1000 solves
 
 ## 🚀 Installation
 
@@ -147,11 +153,13 @@ proxy.example.com:3128:myuser:mypass
 
 | Setting | Description | Options |
 |---------|-------------|---------|
-| **Proxy Type** | Protocol to use | HTTP, HTTPS, SOCKS4, SOCKS5 |
-| **Captcha Service** | Solving service | NONE, 2Captcha, Anti-Captcha, CapMonster |
-| **Captcha API Key** | Your service key | Your API key string |
+| **Proxy Type** | Protocol to use | HTTP, HTTPS, SOCKS4, SOCKS5, Residential, Datacenter, Rotating |
+| **Proxy Category** | Quality tracking | Residential, Datacenter, Mobile, Rotating |
+| **Captcha Service** | Solving service | NONE, 2Captcha, Anti-Captcha, CapMonster, DeathByCaptcha, ImageTyperz, AZCaptcha, CaptchaCoder, CapSolver, TrueCaptcha |
+| **Captcha API Key** | Your service key | Your API key string (some services need user:key format) |
 | **Advanced Evasion** | Anti-bot features | ON/OFF |
 | **Retry on Captcha** | Auto-retry | YES/NO |
+| **Proxy Rotation** | Rotate proxies | ON/OFF |
 | **Max Retries** | Retry limit | 1-10 |
 | **Max Threads** | Concurrent checks | 1-50 (default: 10) |
 
