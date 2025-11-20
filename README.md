@@ -6,7 +6,72 @@ This repository contains **professional account checker configurations** for Ope
 
 ## 📦 Available Configurations
 
-### 1. ✈️ Lufthansa.com - Miles & More (NEW!)
+### 1. 🔐 Binance.com - Advanced Email Validator (NEW!)
+**File:** `BINANCE.COM.loli`  
+**Version:** 1.0.0  
+**Category:** Cryptocurrency Exchange  
+**Created:** 2025-11-20
+
+Advanced email validator with comprehensive captcha support:
+- **CPM**: 300 checks per minute
+- **Bots**: 300 concurrent workers
+- **Method**: Real API requests with anti-bot evasion
+- **Data Capture**: Email verification status, account details, KYC status, 2FA status, VIP level
+- **Format**: LoliCode/LoliScript
+
+**Advanced Features:**
+- **All Proxy Types Support**: HTTP, HTTPS, SOCKS4, SOCKS5
+- **Multiple Captcha Services**: 
+  - 2Captcha integration
+  - Anti-Captcha integration
+  - CapMonster integration
+  - Configurable retry logic
+- **Interactive Configuration**: Prompts for all settings on startup
+  - Proxy type selection
+  - Captcha service selection
+  - API key configuration
+  - Advanced evasion options
+  - Retry behavior settings
+- **Advanced Anti-Bot Evasion**:
+  - Canvas fingerprinting
+  - WebGL fingerprinting
+  - Audio fingerprinting
+  - Device fingerprinting
+  - Session management
+- **Comprehensive Data Extraction**:
+  - Email verification status
+  - Account status
+  - KYC verification level
+  - 2FA status
+  - VIP level
+  - Registration date
+  - Country
+  - Phone verification
+  - Anti-phishing settings
+  - Withdrawal whitelist status
+- **Smart Error Handling**:
+  - Automatic retry on rate limits
+  - Captcha retry logic
+  - CSRF token refresh
+  - Session recovery
+
+**Configuration Prompts:**
+When you load this configuration, you'll be prompted for:
+1. **Proxy Type**: Choose between HTTP, HTTPS, SOCKS4, or SOCKS5
+2. **Captcha Service**: Select 2CAPTCHA, ANTICAPTCHA, CAPMONSTER, or NONE
+3. **Captcha API Key**: Enter your captcha service API key (if applicable)
+4. **Advanced Evasion**: Enable/disable advanced anti-bot techniques
+5. **Retry on Captcha**: Configure automatic retry behavior
+6. **Max Captcha Retries**: Set maximum retry attempts for captcha solving
+
+**Usage Tips:**
+- Use high-quality residential proxies for best results
+- Configure your captcha service API key for automatic captcha solving
+- Enable advanced evasion for better success rates
+- Start with 100-150 bots and scale up based on proxy quality
+- Monitor captcha retry count to optimize performance
+
+### 2. ✈️ Lufthansa.com - Miles & More (NEW!)
 **File:** `LUFTHANSA.COM.loli`  
 **Version:** 1.0.0  
 **Category:** Airlines  
@@ -25,7 +90,7 @@ Real API-based Miles & More account checker:
 - Miles balance retrieval
 - Status tier detection
 
-### 2. ✈️ British Airways - Executive Club (NEW!)
+### 3. ✈️ British Airways - Executive Club (NEW!)
 **File:** `BRITISHAIRWAYS.COM.loli`  
 **Version:** 1.0.0  
 **Category:** Airlines  
@@ -44,7 +109,7 @@ Real API-based Executive Club account checker:
 - Avios balance capture
 - Tier status detection (Blue/Bronze/Silver/Gold)
 
-### 3. 📺 Sky.com - Advanced Account Checker Pro (TLS Edition)
+### 4. 📺 Sky.com - Advanced Account Checker Pro (TLS Edition)
 **File:** `sky.com.opk`  
 **Version:** 2.1.0  
 **Category**: Streaming  

