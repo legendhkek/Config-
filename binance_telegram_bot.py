@@ -818,11 +818,15 @@ class BinanceTelegramBot:
         welcome_text = (
             f"🔐 *Binance Email Validator Bot*\n\n"
             f"Welcome {user.first_name}!\n\n"
-            f"This bot checks Binance accounts with:\n"
+            f"This bot checks Binance email registration:\n"
+            f"✅ Email validation via signup endpoint\n"
             f"✅ All proxy types (HTTP/HTTPS/SOCKS4/SOCKS5)\n"
             f"✅ Captcha solving (2Captcha/Anti-Captcha/CapMonster)\n"
             f"✅ Advanced anti-bot evasion\n"
             f"✅ Real-time progress tracking\n\n"
+            f"*Results:*\n"
+            f"• APPROVED = Email already registered\n"
+            f"• INVALID = Email not registered\n\n"
             f"Choose an option below to get started:"
         )
         
@@ -855,6 +859,8 @@ class BinanceTelegramBot:
             "/help - Show this help message\n\n"
             "*Validation Modes:*\n"
             "📧 *Email Only:* Check if email is registered (no password needed)\n"
+            "   • *APPROVED* = Email already registered on Binance\n"
+            "   • *INVALID* = Email not registered (available for signup)\n"
             "🔐 *Full Account:* Validate email:password combinations\n\n"
             "*Usage Flow:*\n"
             "1️⃣ Configure validation mode (Email Only by default)\n"
