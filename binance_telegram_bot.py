@@ -553,6 +553,36 @@ class BinanceChecker:
                 await asyncio.sleep(5)
         return None
     
+    def _is_email_already_registered(self, response_data: dict) -> bool:
+        """Helper method to determine if email is already registered based on API response
+        
+        Args:
+            response_data: The JSON response from Binance API
+            
+        Returns:
+            True if email is already registered, False otherwise
+        """
+        # Check error codes that indicate email already exists
+        error_codes = ['100002', '100003', '100004']  # Known Binance error codes for existing email
+        if response_data.get('code') in error_codes:
+            return True
+        
+        # If success is explicitly False, check the message field
+        if response_data.get('success') == False:
+            message = response_data.get('message', '').lower()
+            msg = response_data.get('msg', '').lower()
+            error = response_data.get('error', '').lower()
+            
+            # Check for specific keywords in error messages
+            keywords = ['already registered', 'already exists', 'email exists', 
+                       'email is registered', 'account exists']
+            
+            for keyword in keywords:
+                if keyword in message or keyword in msg or keyword in error:
+                    return True
+        
+        return False
+    
     async def check_email_registered(self, email: str) -> CheckResult:
         """Check if an email is registered on Binance using signup endpoint
         
@@ -593,21 +623,14 @@ class BinanceChecker:
                     proxy=proxy.get('http') if proxy else None
                 ) as resp:
                     response_data = await resp.json()
-                    response_text = str(response_data).lower()
                     
-                    # Check if email is already registered
-                    # Response patterns when email is already registered:
-                    # - "already registered", "already exists", "email exists", "registered"
-                    if (response_data.get('code') in ['100002', '100003'] or 
-                        'already' in response_text or 
-                        'registered' in response_text or 
-                        'exist' in response_text or
-                        response_data.get('success') == False):
+                    # Check if email is already registered using helper method
+                    if self._is_email_already_registered(response_data):
                         # Email is already registered -> return "approved"
                         result.status = "approved"
                         result.is_registered = True
                         result.error_message = "Email already registered"
-                    elif response_data.get('success') or response_data.get('code') == '000000':
+                    elif response_data.get('success') == True or response_data.get('code') == '000000':
                         # Email is not registered, can proceed with signup -> return "invalid"
                         result.status = "invalid"
                         result.is_registered = False
@@ -622,13 +645,9 @@ class BinanceChecker:
                             proxy=proxy.get('http') if proxy else None
                         ) as check_resp:
                             check_response = await check_resp.json()
-                            check_text = str(check_response).lower()
                             
-                            # If email already exists, it's registered -> "approved"
-                            if ('already' in check_text or 
-                                'exist' in check_text or 
-                                'registered' in check_text or
-                                check_response.get('success') == False):
+                            # Use helper method for fallback check as well
+                            if self._is_email_already_registered(check_response):
                                 result.status = "approved"
                                 result.is_registered = True
                                 result.error_message = "Email already registered"
