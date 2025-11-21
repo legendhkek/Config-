@@ -32,6 +32,8 @@ from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, asdict
 from enum import Enum
 
+from dotenv import load_dotenv
+
 import aiohttp
 import aiofiles
 from telegram import (
@@ -1570,6 +1572,9 @@ class BinanceTelegramBot:
 
 def main():
     """Main function"""
+    # Load environment variables from .env file
+    load_dotenv()
+    
     # Get bot token from environment variable
     BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
     
