@@ -19,6 +19,11 @@ Advanced email validator with comprehensive captcha support:
 
 **🤖 NEW: Telegram Bot Interface**
 - Interactive Telegram bot with menu-driven interface
+- **Email Validation Modes**:
+  - **Email Only Mode**: Check if email is already registered on Binance
+    - Returns "Approved" = Email already registered (cannot signup)
+    - Returns "Invalid" = Email not registered (available for signup)
+  - **Full Account Mode**: Validate email:password combinations
 - Upload combos and proxies directly in chat
 - Real-time progress updates and notifications
 - Automatic result export
