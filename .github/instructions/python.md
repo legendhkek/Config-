@@ -157,13 +157,39 @@ def validate_email(email: str) -> bool:
     return bool(re.match(pattern, email))
 
 def validate_proxy(proxy: str) -> bool:
-    """Validate proxy format (host:port or user:pass@host:port)."""
-    patterns = [
-        r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5}$',  # IP:port
-        r'^[\w.-]+:\d{1,5}$',  # domain:port
-        r'^[\w.-]+:[\w.-]+@[\w.-]+:\d{1,5}$',  # user:pass@host:port
-    ]
-    return any(re.match(pattern, proxy) for pattern in patterns)
+    """
+    Validate proxy format (host:port or user:pass@host:port).
+    
+    For production, consider using ipaddress module for IP validation.
+    """
+    # Split auth from host:port if present
+    if '@' in proxy:
+        auth, host_port = proxy.rsplit('@', 1)
+        if ':' not in auth:
+            return False
+    else:
+        host_port = proxy
+    
+    # Validate host:port format
+    if ':' not in host_port:
+        return False
+    
+    host, port = host_port.rsplit(':', 1)
+    
+    # Validate port
+    try:
+        port_num = int(port)
+        if not (1 <= port_num <= 65535):
+            return False
+    except ValueError:
+        return False
+    
+    # Basic host validation (IP or domain)
+    # For IP validation, use: ipaddress.ip_address(host)
+    if not host:
+        return False
+    
+    return True
 ```
 
 ### Rate Limiting
