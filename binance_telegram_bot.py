@@ -191,6 +191,11 @@ class BinanceChecker:
     
     BASE_URL = "https://www.binance.com"
     
+    # Binance API error codes for email already registered
+    ERROR_CODE_EMAIL_EXISTS = '100002'  # Email already registered
+    ERROR_CODE_ACCOUNT_EXISTS = '100003'  # Account already exists
+    ERROR_CODE_DUPLICATE_EMAIL = '100004'  # Duplicate email
+    
     def __init__(self, session: UserSession):
         self.session = session
         self.proxy_index = 0
@@ -563,12 +568,16 @@ class BinanceChecker:
             True if email is already registered, False otherwise
         """
         # Check error codes that indicate email already exists
-        error_codes = ['100002', '100003', '100004']  # Known Binance error codes for existing email
+        error_codes = [
+            self.ERROR_CODE_EMAIL_EXISTS,
+            self.ERROR_CODE_ACCOUNT_EXISTS,
+            self.ERROR_CODE_DUPLICATE_EMAIL
+        ]
         if response_data.get('code') in error_codes:
             return True
         
         # If success is explicitly False, check the message field
-        if response_data.get('success') == False:
+        if response_data.get('success') is False:
             message = response_data.get('message', '').lower()
             msg = response_data.get('msg', '').lower()
             error = response_data.get('error', '').lower()
@@ -630,7 +639,7 @@ class BinanceChecker:
                         result.status = "approved"
                         result.is_registered = True
                         result.error_message = "Email already registered"
-                    elif response_data.get('success') == True or response_data.get('code') == '000000':
+                    elif response_data.get('success') is True or response_data.get('code') == '000000':
                         # Email is not registered, can proceed with signup -> return "invalid"
                         result.status = "invalid"
                         result.is_registered = False
