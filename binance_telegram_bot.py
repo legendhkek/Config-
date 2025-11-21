@@ -1572,11 +1572,13 @@ class BinanceTelegramBot:
 
 def main():
     """Main function"""
-    # Load environment variables from .env file
-    load_dotenv()
+    # Bot token - configured directly
+    BOT_TOKEN = '8452598919:AAH2aABS0_9k0_TDP1SHqd9SXrB0Q0h4dXI'
     
-    # Get bot token from environment variable
-    BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+    # Fallback: Load from environment variables if not set above
+    if not BOT_TOKEN:
+        load_dotenv()
+        BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
     
     if not BOT_TOKEN:
         logger.error("TELEGRAM_BOT_TOKEN environment variable not set!")
